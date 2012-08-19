@@ -12,7 +12,9 @@ Gem::Specification.new do |s|
   s.files    += Dir.glob("lib/**/*")
   s.files    += Dir.glob("spec/**/*")
 
-  s.add_dependency    "redis", ">= 2.2"
+  s.add_dependency "redis", ">= 2.2"
+  s.add_dependency "redis-namespace"
+  s.add_dependency "activesupport"
 
   s.add_development_dependency "rake"
   s.add_development_dependency "rspec"
