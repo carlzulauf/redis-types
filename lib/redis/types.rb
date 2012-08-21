@@ -2,6 +2,7 @@ require 'securerandom'
 require 'delegate'
 
 require 'active_support/core_ext'
+require 'active_support/concern'
 require 'redis'
 require 'redis/namespace'
 
@@ -12,14 +13,12 @@ require 'redis/types/big_hash'
 
 class Redis
   module Types
-    LARGE_HASH_LENGTH = 1_000
     class << self
       def load(key, options = {})
         redis = options[:redis] || Redis.current
         case redis.type( key )
         when "hash"
-          large = options[:large_hash] || LARGE_HASH_LENGTH
-          if redis.hlen( key ) < large
+          if options[:type] =~ /hash_map/ or redis.object(:encoding, key) == "zipmap"
             HashMap.new(key, :redis => redis)
           else
             BigHash.new(key, :redis => redis)

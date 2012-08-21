@@ -18,9 +18,11 @@ describe "Redis::Types" do
 
   describe ".load" do
     before :all do
-      $redis.hmset  :small_hash, *[:foo, "bar", :yin, "yang"]
-      $redis.hmset  :big_hash,   *(0..1_000).map {|i| ["key#{i}", "value#{i}"] }
-      $redis.set    :string, "a typical string"
+      $redis.hmset :small_hash, *[:foo, "bar", :yin, "yang"]
+      begin # loop ensures big hash is big enough
+        $redis.hmset :big_hash, *(0..1_000).map {|i| ["key#{i}", "value#{i}"] }
+      end while $redis.object(:encoding, :big_hash) == "zipmap"
+      $redis.set :string, "a typical string"
     end
 
     it "should load a HashMap for small Redis hashes" do
@@ -31,8 +33,8 @@ describe "Redis::Types" do
       Redis::Types.load(:big_hash).should be_a(Redis::Types::BigHash)
     end
 
-    it "should load a HashMap when the large hash size is increased" do
-      Redis::Types.load(:big_hash, :large_hash => 2_000).should be_a(Redis::Types::HashMap)
+    it "should load a HashMap when explicitly told to" do
+      Redis::Types.load(:big_hash, :type => :hash_map).should be_a(Redis::Types::HashMap)
     end
 
     it "should load a String for Redis strings" do
@@ -40,7 +42,7 @@ describe "Redis::Types" do
     end
 
     after :all do
-      $redis.del :small_hash, :big_hash
+      $redis.del :small_hash, :big_hash, :string
     end
   end
 end
