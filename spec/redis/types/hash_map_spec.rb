@@ -34,8 +34,8 @@ describe "Redis::Types::HashMap" do
   end
 
   describe "#each" do
-    it "should iterate return an Enumerator" do
-      @hash.each.should be_a(Enumerator)
+    it "should iterate return an Enumerable" do
+      @hash.each.should be_a(Enumerable)
     end
 
     it "should iterate through keys and values" do
