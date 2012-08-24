@@ -1,11 +1,10 @@
 require File.expand_path(File.dirname(__FILE__) + '/../../spec_helper')
 
 describe "Redis::Types::HashMap" do
-  before :all do
+  before :each do
     hash = Redis::Types::HashMap.new("test")
     hash[:foo] = "bar"
     hash.save
-    puts hash.inspect
     @hash = Redis::Types::HashMap.new("test")
   end
 
@@ -34,7 +33,20 @@ describe "Redis::Types::HashMap" do
     end
   end
 
-  after :all do
+  describe "#each" do
+    it "should iterate return an Enumerator" do
+      @hash.each.should be_a(Enumerator)
+    end
+
+    it "should iterate through keys and values" do
+      @hash.each do |key, value|
+        key.to_s.should == "foo"
+        value.should == "bar"
+      end
+    end
+  end
+
+  after :each do
     @hash.destroy
   end
 end

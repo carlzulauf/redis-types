@@ -15,7 +15,7 @@ module Redis::Types
     def save
       redis.pipelined do |r|
         r.del key
-        r.hmset key, *current.to_a.flatten
+        r.mapped_hmset(key, current) unless current.empty?
       end
     end
 
