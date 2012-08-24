@@ -18,7 +18,7 @@ class Redis
         redis = options[:redis] || Redis.current
         case redis.type( key )
         when "hash"
-          if options[:type] =~ /hash_map/ or redis.object(:encoding, key) == "zipmap"
+          if options[:type].to_s =~ /hash_map/ or redis.object(:encoding, key) == "zipmap"
             HashMap.new(key, :redis => redis)
           else
             BigHash.new(key, :redis => redis)
