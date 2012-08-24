@@ -8,5 +8,5 @@ task :test    => :spec
 
 desc "Run specs"
 task :spec do
-  `rspec spec`
+  exec "rspec spec"
 end
