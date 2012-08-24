@@ -32,14 +32,15 @@ module Redis::Types::ClientMethods
   module ClassMethods
   
     def redis
-      unless self.class_variable_defined?(:'@@redis')
-        self.class_variable_set(:'@@redis', ::Redis.current)
+      if self.class_variable_defined?(:'@@redis')
+        self.class_eval{ @@redis }
+      else
+        self.class_eval{ @@redis = Redis.current }
       end
-      self.class_variable_get(:'@@redis')
     end
   
     def redis=(connection)
-      self.class_variable_set(:'@@redis', connection)
+      self.class_eval{ @@redis = connection }
     end
   
     def generate_key
