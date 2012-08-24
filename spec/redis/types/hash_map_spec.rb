@@ -5,6 +5,7 @@ describe "Redis::Types::HashMap" do
     hash = Redis::Types::HashMap.new("test")
     hash[:foo] = "bar"
     hash.save
+    puts hash.inspect
     @hash = Redis::Types::HashMap.new("test")
   end
 
@@ -22,6 +23,14 @@ describe "Redis::Types::HashMap" do
     it "should set the specified key to the specified value" do
       @hash[:yin] = "yang"
       @hash[:yin].should == "yang"
+    end
+  end
+
+  describe "#delete" do
+    it "should remove the specified key from the hash" do
+      @hash.delete(:foo)
+      @hash.save
+      Redis::Types::HashMap.new("test")[:foo].should be_nil
     end
   end
 
