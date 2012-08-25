@@ -8,6 +8,28 @@ describe "Redis::Types::HashMap" do
     @hash = Redis::Types::HashMap.new("test")
   end
 
+  describe "#new" do
+    it "should create an empty hash by default" do
+      Redis::Types::HashMap.new("foo").should be_empty
+    end
+    it "should generate a key if one is not provided" do
+      Redis::Types::HashMap.new.key.should_not be_nil
+    end
+    it "should open an existing hash when provided a key" do
+      hash = Redis::Types::HashMap.new("test")
+      hash[:foo].should == "bar"
+    end
+    it "should allow the key to be provided in option hash" do
+      hash = Redis::Types::HashMap.new(:key => :test)
+      hash[:foo].should == "bar"
+    end
+    it "should merge values when data is provided in option hash" do
+      hash = Redis::Types::HashMap.new("test", :data => {:yin => "yang"})
+      hash[:foo].should == "bar"
+      hash[:yin].should == "yang"
+    end
+  end
+
   describe "#[]" do
     it "should return an existing string value" do
       @hash[:foo].should == "bar"
@@ -43,6 +65,23 @@ describe "Redis::Types::HashMap" do
         key.to_s.should == "foo"
         value.should == "bar"
       end
+    end
+  end
+
+  describe "#save" do
+    it "should cause the hash to persist" do
+      hash = Redis::Types::HashMap.new("foo", :data => {:key => "value"})
+      hash.redis.hgetall("foo").should == {}
+      hash.save
+      hash.redis.hgetall("foo").should == {"key" => "value"}
+    end
+  end
+
+  describe "#destroy" do
+    it "should cause the hash to be deleted" do
+      @hash.redis.hgetall("test").should == {"foo" => "bar"}
+      @hash.destroy
+      @hash.redis.hgetall("test").should == {}
     end
   end
 

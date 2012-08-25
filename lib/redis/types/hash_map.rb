@@ -5,11 +5,12 @@ module Redis::Types
 
     def initialize(*args)
       options = args.extract_options!
-      self.key        = args.unshift || options[:key] || self.class.generate_key
+      self.key        = args.shift || options[:key]
       self.redis      = options[:redis]     if options[:redis].present?
       self.namespace  = optinos[:namespace] if options[:namespace].present?
       reload!
       __setobj__ current
+      merge!(options[:data]) if options[:data].present?
     end
 
     def save
