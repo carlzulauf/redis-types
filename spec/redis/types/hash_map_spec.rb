@@ -2,10 +2,9 @@ require File.expand_path(File.dirname(__FILE__) + '/../../spec_helper')
 
 describe "Redis::Types::HashMap" do
   before :each do
-    hash = Redis::Types::HashMap.new("test")
-    hash[:foo] = "bar"
-    hash.save
     @hash = Redis::Types::HashMap.new("test")
+    @hash[:foo] = "bar"
+    @hash.save
   end
 
   describe "#new" do
@@ -68,20 +67,29 @@ describe "Redis::Types::HashMap" do
     end
   end
 
+  describe "#each_pair" do
+    it "should iterate through keys and values" do
+      @hash.each_pair do |key, value|
+        key.to_s.should == "foo"
+        value.should == "bar"
+      end
+    end
+  end
+
   describe "#save" do
     it "should cause the hash to persist" do
       hash = Redis::Types::HashMap.new("foo", :data => {:key => "value"})
-      hash.redis.hgetall("foo").should == {}
+      $redis.hgetall("foo").should == {}
       hash.save
-      hash.redis.hgetall("foo").should == {"key" => "value"}
+      $redis.hgetall("foo").should == {"key" => "value"}
     end
   end
 
   describe "#destroy" do
     it "should cause the hash to be deleted" do
-      @hash.redis.hgetall("test").should == {"foo" => "bar"}
+      $redis.hgetall("test").should == {"foo" => "bar"}
       @hash.destroy
-      @hash.redis.hgetall("test").should == {}
+      $redis.hgetall("test").should == {}
     end
   end
 
