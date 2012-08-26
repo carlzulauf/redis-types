@@ -50,12 +50,22 @@ describe "Redis::Types::HashMap" do
     end
   end
 
-  describe "#reload!" do
-    it "should cause values added to the hash since loading to show up" do
+  describe "#reload" do
+    it "should cause values added to the hash since loading to load" do
       $redis.mapped_hmset("test", {"yin" => "yang"})
       @hash[:yin].should be_nil
-      @hash.reload!
+      @hash.reload
       @hash[:yin].should == "yang"
+    end
+  end
+
+  describe "#load" do
+    it "should cause values added to be present through #original" do
+      $redis.mapped_hmset("test", {:yin => "yang"})
+      @hash.original[:yin].should be_nil
+      @hash.load
+      @hash.original[:yin].should == "yang"
+      @hash[:yin].should be_nil
     end
   end
 

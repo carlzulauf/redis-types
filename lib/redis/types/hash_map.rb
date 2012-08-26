@@ -8,7 +8,7 @@ module Redis::Types
       self.key        = args.shift || options[:key]
       self.redis      = options[:redis]     if options[:redis].present?
       self.namespace  = optinos[:namespace] if options[:namespace].present?
-      reload!
+      reload
       merge!(options[:data]) if options[:data].present?
     end
 
@@ -23,20 +23,17 @@ module Redis::Types
       redis.del key
     end
 
-    def reload!
-      load!
-      @current = @original.dup
+    def load
+      @original = HashWithIndifferentAccess.new( redis.hgetall key )
+    end
+
+    def reload
+      load
+      @current = original.dup
     end
 
     def __getobj__
       current
     end
-
-  private
-
-    def load!
-      @original = HashWithIndifferentAccess.new( redis.hgetall key )
-    end
-
   end
 end
