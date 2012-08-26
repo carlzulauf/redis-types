@@ -1,5 +1,5 @@
 module Redis::Types
-  class HashMap < SimpleDelegator
+  class HashMap < Delegator
     include ClientMethods
     attr_reader :current, :original
 
@@ -9,7 +9,6 @@ module Redis::Types
       self.redis      = options[:redis]     if options[:redis].present?
       self.namespace  = optinos[:namespace] if options[:namespace].present?
       reload!
-      __setobj__ current
       merge!(options[:data]) if options[:data].present?
     end
 
@@ -24,15 +23,20 @@ module Redis::Types
       redis.del key
     end
 
-    private
+    def reload!
+      load!
+      @current = @original.dup
+    end
+
+    def __getobj__
+      current
+    end
+
+  private
 
     def load!
       @original = HashWithIndifferentAccess.new( redis.hgetall key )
     end
 
-    def reload!
-      load!
-      @current = @original.dup
-    end
   end
 end
