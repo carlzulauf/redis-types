@@ -7,6 +7,10 @@ describe "Redis::Types::HashMap" do
     @hash.save
   end
 
+  # ==============================================
+  # `HashMap` specific methods
+  # ==============================================
+
   describe "#new" do
     it "should create an empty hash by default" do
       Redis::Types::HashMap.new("foo").should be_empty
@@ -28,6 +32,36 @@ describe "Redis::Types::HashMap" do
       hash[:yin].should == "yang"
     end
   end
+
+  describe "#save" do
+    it "should cause the hash to persist" do
+      hash = Redis::Types::HashMap.new("foo", :data => {:key => "value"})
+      $redis.hgetall("foo").should == {}
+      hash.save
+      $redis.hgetall("foo").should == {"key" => "value"}
+    end
+  end
+
+  describe "#destroy" do
+    it "should cause the hash to be deleted" do
+      $redis.hgetall("test").should == {"foo" => "bar"}
+      @hash.destroy
+      $redis.hgetall("test").should == {}
+    end
+  end
+
+  describe "#reload!" do
+    it "should cause values added to the hash since loading to show up" do
+      $redis.mapped_hmset("test", {"yin" => "yang"})
+      @hash[:yin].should be_nil
+      @hash.reload!
+      @hash[:yin].should == "yang"
+    end
+  end
+
+  # ==============================================
+  # Typical `Hash` methods
+  # ==============================================
 
   describe "#[]" do
     it "should return an existing string value" do
@@ -73,23 +107,6 @@ describe "Redis::Types::HashMap" do
         key.to_s.should == "foo"
         value.should == "bar"
       end
-    end
-  end
-
-  describe "#save" do
-    it "should cause the hash to persist" do
-      hash = Redis::Types::HashMap.new("foo", :data => {:key => "value"})
-      $redis.hgetall("foo").should == {}
-      hash.save
-      $redis.hgetall("foo").should == {"key" => "value"}
-    end
-  end
-
-  describe "#destroy" do
-    it "should cause the hash to be deleted" do
-      $redis.hgetall("test").should == {"foo" => "bar"}
-      @hash.destroy
-      $redis.hgetall("test").should == {}
     end
   end
 
