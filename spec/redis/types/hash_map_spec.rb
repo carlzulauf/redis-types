@@ -78,6 +78,17 @@ describe "Redis::Types::HashMap" do
       @hash[:yin] = "yang"
       @hash.changes[:yin].should == [nil, "yang"]
     end
+    it "should contain changed keys" do
+      @hash[:foo] = "something else"
+      @hash.changes[:foo].should == ["bar", "something else"]
+    end
+    it "should contain deleted keys" do
+      @hash.delete(:foo)
+      @hash.changes[:foo].should == ["bar", nil]
+    end
+    it "should not contain unchanged keys" do
+      @hash.changes[:foo].should be_nil
+    end
   end
 
   # ==============================================
