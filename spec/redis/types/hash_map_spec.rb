@@ -70,6 +70,17 @@ describe "Redis::Types::HashMap" do
   end
 
   # ==============================================
+  # State tracking methods
+  # ==============================================
+
+  describe "#changes" do
+    it "should contain recently added keys" do
+      @hash[:yin] = "yang"
+      @hash.changes[:yin].should == [nil, "yang"]
+    end
+  end
+
+  # ==============================================
   # Typical `Hash` methods
   # ==============================================
 

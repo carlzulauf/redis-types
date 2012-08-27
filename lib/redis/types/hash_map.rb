@@ -17,6 +17,7 @@ module Redis::Types
         r.del key
         r.mapped_hmset(key, current) unless current.empty?
       end
+      @original = current.dup
     end
 
     def destroy
@@ -30,6 +31,21 @@ module Redis::Types
     def reload
       load
       @current = original.dup
+    end
+
+    def changes
+      HashWithIndifferentAccess.new.tap do |changes|
+        each_pair do |key, value|
+          changes[key] = [ original[key], current[key] ] unless original[key] == current[key]
+        end
+        (original.keys - current.keys).each do |key|
+          changes[key] = [ original[key], nil ]
+        end
+      end
+    end
+
+    def deleted
+      original.keys.delete_if {|k| current.key? k }
     end
 
     def __getobj__
