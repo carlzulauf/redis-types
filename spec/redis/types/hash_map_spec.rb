@@ -91,6 +91,43 @@ describe "Redis::Types::HashMap" do
     end
   end
 
+  describe "#added" do
+    it "should contain recently added keys" do
+      @hash[:yin] = "yang"
+      @hash.added.member?("yin").should be_true
+    end
+    it "should not contain changed keys" do
+      @hash[:foo] = "something else"
+      @hash.added.empty?.should be_true
+    end
+  end
+
+  describe "#changed" do
+    it "should contain recently changed keys" do
+      @hash[:foo] = "something else"
+      @hash.changed.member?("foo").should be_true
+    end
+    it "should not contain recently added keys" do
+      @hash[:yin] = "yang"
+      @hash.changed.empty?.should be_true
+    end
+    it "should not contain recently deleted keys" do
+      @hash.delete(:foo)
+      @hash.changed.empty?.should be_true
+    end
+  end
+
+  describe "#deleted" do
+    it "should contain recently removed keys" do
+      @hash.delete(:foo)
+      @hash.deleted.member?("foo").should be_true
+    end
+    it "should not contain recently changed keys" do
+      @hash[:foo] = "something else"
+      @hash.deleted.empty?.should be_true
+    end
+  end
+
   # ==============================================
   # Typical `Hash` methods
   # ==============================================

@@ -44,8 +44,16 @@ module Redis::Types
       end
     end
 
+    def added
+      current.keys - original.keys
+    end
+
     def deleted
-      original.keys.delete_if {|k| current.key? k }
+      original.keys - current.keys
+    end
+
+    def changed
+      original.keys.keep_if {|key| current.key?(key) and original[key] != current[key] }
     end
 
     def __getobj__
