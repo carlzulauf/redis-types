@@ -112,7 +112,7 @@ module Redis::Types
 
       def changes
         HashWithIndifferentAccess.new.tap do |changes|
-          each_pair do |key, value|
+          current.each_pair do |key, value|
             changes[key] = [ original[key], current[key] ] unless original[key] == current[key]
           end
           (original.keys - current.keys).each do |key|
