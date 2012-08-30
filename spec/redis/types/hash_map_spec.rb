@@ -156,6 +156,8 @@ describe "Redis::Types::HashMap" do
         @hash[:yin].should be_nil
         @hash[:foo].should == "bar"
         @hash[:key] = "value"
+        @hash[:yin] = "something"
+        @hash[:foo] = "baz"
         concurrent.save
         @hash.save
         @hash[:yin].should == "yang"
