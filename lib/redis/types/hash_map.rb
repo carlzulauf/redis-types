@@ -130,7 +130,7 @@ module Redis::Types
       end
 
       def changed
-        original.keys.keep_if {|key| current.key?(key) and original[key] != current[key] }
+        original.keys.select {|key| current.key?(key) and original[key] != current[key] }
       end
     end
 
