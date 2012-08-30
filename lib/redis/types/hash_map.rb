@@ -53,21 +53,22 @@ module Redis::Types
           @version ||= self.class.generate_key
         end
 
-        def save
-          saved = false
-          until saved
+        def save(max_attempts = 5)
+          saved, attempts = false, 0
+          until saved or attempts >= max_attempts
+            attempts += 1
             redis.watch key
             last_saved = redis.hget key, "__version__"
-            if version == last_saved
+            if last_saved.nil? or version == last_saved
               saved = redis.multi do |r|
-                r.hdel key, *deleted
+                r.hdel key, *deleted unless deleted.empty?
                 r.mapped_hmset key, current_changes
               end
             else
               reload
             end
           end
-          @original = @current.dup
+          @original = current.dup
         end
 
         def current_changes
@@ -77,10 +78,18 @@ module Redis::Types
           end
         end
 
-        def reload
-          @original = __read__
-          @version  = @original.delete(:__version__)
-          @current  = @original.dup
+        def reload # merging reload
+          update = __read__
+          @version = update.delete(:__version__)
+          if @original.nil?
+            @current = update.dup
+          else
+            changes = update.dup
+            changes.delete_if {|key, value| @original[key] == value }
+            @current.merge!(changes)
+            @current.delete_if {|k,v| @original.key?(k) and !update.key?(k) }
+          end
+          @original = update
         end
       end
 
@@ -106,9 +115,7 @@ module Redis::Types
     end
 
     module TrackChanges
-      def original
-        @original ||= current.dup
-      end
+      def original; @original; end
 
       def changes
         HashWithIndifferentAccess.new.tap do |changes|

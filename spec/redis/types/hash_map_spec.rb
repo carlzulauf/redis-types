@@ -138,6 +138,31 @@ describe "Redis::Types::HashMap" do
         @hash.deleted.empty?.should be_true
       end
     end
+
+    describe "#save" do
+      it "should successfully add and delete values added/removed" do
+        @hash[:yin] = "yang"
+        @hash[:key] = "value"
+        @hash.delete(:foo)
+        @hash.save
+        hash = Redis::Types::HashMap.new( @hash.key, :strategy => :merge )
+        hash[:yin].should == "yang"
+        hash[:foo].should be_nil
+      end
+      it "should incorporate concurrently made changes" do
+        concurrent = Redis::Types::HashMap.new( @hash.key, :strategy => :merge )
+        concurrent[:yin] = "yang"
+        concurrent.delete(:foo)
+        @hash[:yin].should be_nil
+        @hash[:foo].should == "bar"
+        @hash[:key] = "value"
+        concurrent.save
+        @hash.save
+        @hash[:yin].should == "yang"
+        @hash[:foo].should be_nil
+        @hash[:key].should == "value"
+      end
+    end
   end
 
   # ==============================================
