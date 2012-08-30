@@ -40,6 +40,18 @@ describe "Redis::Types::HashMap" do
       hash.save
       $redis.hgetall("foo").should == {"key" => "value"}
     end
+    context "with replace strategy" do
+      it "should overwrite concurrent changes made to the hash" do
+        hash = Redis::Types::HashMap.new "test", :strategy => :replace
+        @hash[:foo] = "something else"
+        @hash[:yin] = "yang"
+        @hash.save
+        $redis.hget("test", "yin").should == "yang"
+        hash.save
+        $redis.hget("test", "yin").should be_nil
+        $redis.hget("test", "foo").should == "bar"
+      end
+    end
   end
 
   describe "#destroy" do
@@ -59,72 +71,72 @@ describe "Redis::Types::HashMap" do
     end
   end
 
-  describe "#load" do
-    it "should cause values added to be present through #original" do
-      $redis.mapped_hmset("test", {:yin => "yang"})
-      @hash.original[:yin].should be_nil
-      @hash.load
-      @hash.original[:yin].should == "yang"
-      @hash[:yin].should be_nil
+  describe "#strategy" do
+    it "should default to :replace" do
+      @hash.strategy.should == "Replace"
     end
   end
 
   # ==============================================
   # State tracking methods
   # ==============================================
+  context ":merge strategy" do
+    before :each do
+      @hash = Redis::Types::HashMap.new( @hash.key, :strategy => :merge )
+    end
+    describe "#changes" do
+      it "should contain recently added keys" do
+        @hash[:yin] = "yang"
+        @hash.changes[:yin].should == [nil, "yang"]
+      end
+      it "should contain changed keys" do
+        @hash[:foo] = "something else"
+        @hash.changes[:foo].should == ["bar", "something else"]
+      end
+      it "should contain deleted keys" do
+        @hash.delete(:foo)
+        @hash.changes[:foo].should == ["bar", nil]
+      end
+      it "should not contain unchanged keys" do
+        @hash.changes[:foo].should be_nil
+      end
+    end
 
-  describe "#changes" do
-    it "should contain recently added keys" do
-      @hash[:yin] = "yang"
-      @hash.changes[:yin].should == [nil, "yang"]
+    describe "#added" do
+      it "should contain recently added keys" do
+        @hash[:yin] = "yang"
+        @hash.added.member?("yin").should be_true
+      end
+      it "should not contain changed keys" do
+        @hash[:foo] = "something else"
+        @hash.added.empty?.should be_true
+      end
     end
-    it "should contain changed keys" do
-      @hash[:foo] = "something else"
-      @hash.changes[:foo].should == ["bar", "something else"]
-    end
-    it "should contain deleted keys" do
-      @hash.delete(:foo)
-      @hash.changes[:foo].should == ["bar", nil]
-    end
-    it "should not contain unchanged keys" do
-      @hash.changes[:foo].should be_nil
-    end
-  end
 
-  describe "#added" do
-    it "should contain recently added keys" do
-      @hash[:yin] = "yang"
-      @hash.added.member?("yin").should be_true
+    describe "#changed" do
+      it "should contain recently changed keys" do
+        @hash[:foo] = "something else"
+        @hash.changed.member?("foo").should be_true
+      end
+      it "should not contain recently added keys" do
+        @hash[:yin] = "yang"
+        @hash.changed.empty?.should be_true
+      end
+      it "should not contain recently deleted keys" do
+        @hash.delete(:foo)
+        @hash.changed.empty?.should be_true
+      end
     end
-    it "should not contain changed keys" do
-      @hash[:foo] = "something else"
-      @hash.added.empty?.should be_true
-    end
-  end
 
-  describe "#changed" do
-    it "should contain recently changed keys" do
-      @hash[:foo] = "something else"
-      @hash.changed.member?("foo").should be_true
-    end
-    it "should not contain recently added keys" do
-      @hash[:yin] = "yang"
-      @hash.changed.empty?.should be_true
-    end
-    it "should not contain recently deleted keys" do
-      @hash.delete(:foo)
-      @hash.changed.empty?.should be_true
-    end
-  end
-
-  describe "#deleted" do
-    it "should contain recently removed keys" do
-      @hash.delete(:foo)
-      @hash.deleted.member?("foo").should be_true
-    end
-    it "should not contain recently changed keys" do
-      @hash[:foo] = "something else"
-      @hash.deleted.empty?.should be_true
+    describe "#deleted" do
+      it "should contain recently removed keys" do
+        @hash.delete(:foo)
+        @hash.deleted.member?("foo").should be_true
+      end
+      it "should not contain recently changed keys" do
+        @hash[:foo] = "something else"
+        @hash.deleted.empty?.should be_true
+      end
     end
   end
 
