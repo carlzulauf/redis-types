@@ -39,6 +39,7 @@ describe "Redis::Types::HashMap" do
       $redis.hgetall("foo").should == {}
       hash.save
       $redis.hgetall("foo").should == {"key" => "value"}
+      hash.destroy
     end
     context "with replace strategy" do
       it "should overwrite concurrent changes made to the hash" do
