@@ -8,7 +8,14 @@ require 'redis/namespace'
 
 require 'redis/types/marshal'
 require 'redis/types/client_methods'
+
 require 'redis/types/hash_map'
+require 'redis/types/hash_map/track_changes'
+require 'redis/types/hash_map/strategies/merge'
+require 'redis/types/hash_map/strategies/merge_current_wins'
+require 'redis/types/hash_map/strategies/lock'
+require 'redis/types/hash_map/strategies/fail'
+
 require 'redis/types/big_hash'
 
 class Redis
