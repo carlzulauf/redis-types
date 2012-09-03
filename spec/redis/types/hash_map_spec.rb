@@ -79,8 +79,10 @@ describe "Redis::Types::HashMap" do
   end
 
   # ==============================================
-  # State tracking methods
+  # Strategy specs
   # ==============================================
+
+  # merge strategy
   context ":merge strategy" do
     before :each do
       @hash = Redis::Types::HashMap.new( @hash.key, :strategy => :merge )
@@ -168,6 +170,7 @@ describe "Redis::Types::HashMap" do
     end
   end
 
+  # merge_current_wins strategy
   context ":merge_current_wins strategy" do
     before :each do
       @hash = Redis::Types::HashMap.new( "test", :strategy => :merge_current_wins )
@@ -188,6 +191,7 @@ describe "Redis::Types::HashMap" do
     end
   end
 
+  # lock strategy
   context ":lock strategy" do
     before :each do
       @hash = Redis::Types::HashMap.new( "test", :strategy => :lock )
@@ -228,6 +232,7 @@ describe "Redis::Types::HashMap" do
       end
     end
   end
+  
   # ==============================================
   # Typical `Hash` methods
   # ==============================================
