@@ -170,11 +170,11 @@ describe "Redis::Types::HashMap" do
 
   context ":merge_current_wins strategy" do
     before :each do
-      @hash = Redis::Types::HashMap.new( @hash.key, :strategy => :merge_current_wins )
+      @hash = Redis::Types::HashMap.new( "test", :strategy => :merge_current_wins )
     end
     describe "#save" do
       it "should incorporate concurrently made changes, unless changed in current" do
-        concurrent = Redis::Types::HashMap.new( @hash.key, :strategy => :merge_current_wins )
+        concurrent = Redis::Types::HashMap.new( "test", :strategy => :merge_current_wins )
         concurrent.delete(:foo)
         concurrent[:yin] = "yang"
         concurrent[:key] = "value"
@@ -188,6 +188,46 @@ describe "Redis::Types::HashMap" do
     end
   end
 
+  context ":lock strategy" do
+    before :each do
+      @hash = Redis::Types::HashMap.new( "test", :strategy => :lock )
+    end
+    describe "[]=" do
+      it "should raise an error when called before being locked" do
+        expect{ @hash[:yin] = "yang" }.to raise_error(Redis::Types::HashMap::Strategies::Lock::Error)
+      end
+      it "should allow changes after being locked" do
+        @hash.lock
+        @hash[:yin] = "yang"
+        @hash[:yin].should == "yang"
+      end
+    end
+    describe "#save" do
+      it "should raise error when called without being locked" do
+        expect{ @hash.save }.to raise_error(Redis::Types::HashMap::Strategies::Lock::Error)
+      end
+      it "should save changes after being locked" do
+        @hash.lock
+        @hash[:yin] = "yang"
+        @hash.save
+        $redis.hget("test", "foo").should == "bar"
+        $redis.hget("test", "yin").should == "yang"
+      end
+      it "should raise error when another hash has a lock" do
+        concurrent = Redis::Types::HashMap.new("test", :strategy => :lock)
+        concurrent.lock
+        expect{ @hash.lock }.to raise_error(Redis::Types::HashMap::Strategies::Lock::Error)
+      end
+      it "should overwrite incorporate changes made before being locked" do
+        concurrent = Redis::Types::HashMap.new("test", :strategy => :lock)
+        concurrent.lock
+        concurrent[:yin] = "yang"
+        concurrent.save
+        @hash.lock
+        @hash[:yin].should == "yang"
+      end
+    end
+  end
   # ==============================================
   # Typical `Hash` methods
   # ==============================================
