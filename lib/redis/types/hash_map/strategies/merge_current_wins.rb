@@ -4,21 +4,34 @@
 module Redis::Types::HashMap::Strategies::MergeCurrentWins
   def self.extend_object(obj)
     obj.extend Redis::Types::HashMap::TrackChanges
-    obj.extend Redis::Types::HashMap::Strategies::Merge
     super
+  end
+
+  def save
+    redis.pipelined do |r|
+      d = deleted
+      r.hdel key, *d unless d.empty?
+      r.mapped_hmset key, current_changes
+    end
+    @current, @original = nil, nil
+    reload
+  end
+
+  def current_changes
+    {}.tap do |changes|
+      (added + changed).each{|key| changes[key] = current[key] }
+    end
   end
 
   def reload # merging reload where current wins
     update = __read__
-    @version = update.delete(:__version__)
     if @original.nil?
       @current = update.dup
     else
-      changes = @current.dup
-      changes.delete_if {|key, value| @original[key] == value }
-      changes = update.merge(changes)
-      changes.delete_if {|k,v| @original.key?(k) and !@current.key?(k) }
-      @current = changes
+      changes = current_changes
+      deleted = self.deleted
+      @current = update.merge(changes)
+      @current.delete_if{|k,v| deleted.member?(k) }
     end
     @original = update
   end
