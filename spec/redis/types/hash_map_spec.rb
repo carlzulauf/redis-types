@@ -168,6 +168,26 @@ describe "Redis::Types::HashMap" do
     end
   end
 
+  context ":merge_current_wins strategy" do
+    before :each do
+      @hash = Redis::Types::HashMap.new( @hash.key, :strategy => :merge_current_wins )
+    end
+    describe "#save" do
+      it "should incorporate concurrently made changes, unless changed in current" do
+        concurrent = Redis::Types::HashMap.new( @hash.key, :strategy => :merge_current_wins )
+        concurrent.delete(:foo)
+        concurrent[:yin] = "yang"
+        concurrent[:key] = "value"
+        concurrent.save
+        @hash[:key] = "something"
+        @hash.save
+        @hash[:yin].should == "yang"
+        @hash[:foo].should be_nil
+        @hash[:key].should == "something"
+      end
+    end
+  end
+
   # ==============================================
   # Typical `Hash` methods
   # ==============================================
