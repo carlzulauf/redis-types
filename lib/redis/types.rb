@@ -12,7 +12,7 @@ require 'redis/types/client_methods'
 require 'redis/types/hash_map'
 require 'redis/types/hash_map/track_changes'
 require 'redis/types/hash_map/strategies/merge'
-require 'redis/types/hash_map/strategies/merge_current_wins'
+require 'redis/types/hash_map/strategies/change'
 require 'redis/types/hash_map/strategies/lock'
 require 'redis/types/hash_map/strategies/fail'
 

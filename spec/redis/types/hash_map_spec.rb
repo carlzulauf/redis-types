@@ -170,14 +170,14 @@ describe "Redis::Types::HashMap" do
     end
   end
 
-  # merge_current_wins strategy
-  context ":merge_current_wins strategy" do
+  # change strategy
+  context ":change strategy" do
     before :each do
-      @hash = Redis::Types::HashMap.new( "test", :strategy => :merge_current_wins )
+      @hash = Redis::Types::HashMap.new( "test", :strategy => :change )
     end
     describe "#save" do
       it "should incorporate concurrently made changes, unless changed in current" do
-        concurrent = Redis::Types::HashMap.new( "test", :strategy => :merge_current_wins )
+        concurrent = Redis::Types::HashMap.new( "test", :strategy => :change )
         concurrent.delete(:foo)
         concurrent[:yin] = "yang"
         concurrent[:key] = "value"
