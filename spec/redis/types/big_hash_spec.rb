@@ -19,4 +19,12 @@ describe "Redis::Types::BigHash" do
       @hash[:yin].should == "yang"
     end
   end
+  describe "#each" do
+    it "should iterate through keys and values" do
+      @hash.each do |key,value|
+        key.should == "foo"
+        value.should == "bar"
+      end
+    end
+  end
 end

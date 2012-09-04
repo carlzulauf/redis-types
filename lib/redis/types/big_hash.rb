@@ -1,6 +1,7 @@
 module Redis::Types
   class BigHash
     include ClientMethods
+    include Enumerable
 
     def initialize(*args)
       options = args.extract_options!
@@ -15,6 +16,18 @@ module Redis::Types
 
     def []=(col, value)
       redis.hset key, col, Marshal.dump(value)
+    end
+
+    def each
+      @i    ||= 0
+      @keys ||= redis.hkeys( key )
+      col = @keys[@i]
+      yield [ col, self[col] ]
+      @i += 1
+    end
+
+    def rewind
+      @i, @keys = nil, nil
     end
   end
 end
