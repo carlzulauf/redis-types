@@ -7,7 +7,7 @@ module Redis::Types
       options = args.extract_options!
       self.key        = args.shift || options[:key]
       self.redis      = options[:redis]     if options[:redis].present?
-      self.namespace  = optinos[:namespace] if options[:namespace].present?
+      self.namespace  = options[:namespace] if options[:namespace].present?
       @strategy = (options[:strategy] || :replace).to_s.camelize
       if strategy and Strategies.const_defined?(strategy)
         extend Strategies.const_get(strategy)
