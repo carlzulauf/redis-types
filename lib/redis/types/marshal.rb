@@ -4,8 +4,6 @@ module Redis::Types
       case value
       when String
         value
-      when Fixnum
-        value
       else
         ::Marshal.dump(value) rescue nil
       end

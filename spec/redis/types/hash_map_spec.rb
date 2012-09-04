@@ -284,6 +284,48 @@ describe "Redis::Types::HashMap" do
     end
   end
 
+  # ==============================================
+  # Marshaling tests
+  # ==============================================
+
+  describe "marshalling" do
+    it "should marshal hash values properly" do
+      @hash[:key] = {:foo => "bar"}
+      @hash.save
+      hash = Redis::Types.load "test", :type => :hash_map
+      hash[:key][:foo].should == "bar"
+    end
+    it "should marshal arrays properly" do
+      @hash[:key] = %w{foo bar}
+      @hash.save
+      hash = Redis::Types.load "test"
+      hash[:key].should == %w{foo bar}
+    end
+    it "should marshal integers properly" do
+      @hash[:key] = 123
+      @hash.save
+      hash = Redis::Types.load "test"
+      hash[:key].should === 123
+    end
+    it "should marshal floats properly" do
+      @hash[:key] = 1.23
+      @hash.save
+      hash = Redis::Types.load "test"
+      hash[:key].should === 1.23
+    end
+    it "should marshal user objects properly" do
+      class TestObject
+        attr_accessor :test
+      end
+      t = TestObject.new
+      t.test = "foobar"
+      @hash[:key] = t
+      @hash.save
+      hash = Redis::Types.load "test"
+      hash[:key].test.should == t.test
+    end
+  end
+
   after :each do
     @hash.destroy
   end

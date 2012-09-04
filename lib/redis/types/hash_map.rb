@@ -17,9 +17,13 @@ module Redis::Types
     end
 
     def save
+      data = {}
+      current.each_pair do |k,v|
+        data[k] = Redis::Types::Marshal.dump(v)
+      end
       redis.pipelined do |r|
         r.del key
-        r.mapped_hmset(key, current) unless current.empty?
+        r.mapped_hmset(key, data) unless data.empty?
       end
     end
 
@@ -36,7 +40,11 @@ module Redis::Types
     end
 
     def __read__
-      HashWithIndifferentAccess.new( redis.hgetall key )
+      HashWithIndifferentAccess.new.tap do |hash|
+        redis.hgetall(key).each_pair do |k,v|
+          hash[k] = Redis::Types::Marshal.load(v)
+        end
+      end
     end
 
     module Strategies

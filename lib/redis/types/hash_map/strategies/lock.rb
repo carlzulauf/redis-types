@@ -33,9 +33,13 @@ module Redis::Types::HashMap::Strategies::Lock
 
   def save
     raise(Error, "Hash must be locked before being saved") unless locked?
+    data = {}
+    current.each_pair do |k,v|
+      data[k] = Redis::Types::Marshal.dump(v)
+    end
     redis.pipelined do |r|
       r.del key
-      r.mapped_hmset(key, current) unless current.empty?
+      r.mapped_hmset(key, data) unless data.empty?
     end
     @locked = false
   end

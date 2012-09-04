@@ -19,7 +19,7 @@ module Redis::Types::HashMap::Strategies::Change
 
   def current_changes
     {}.tap do |changes|
-      (added + changed).each{|key| changes[key] = current[key] }
+      (added + changed).each{|key| changes[key] = Redis::Types::Marshal.dump(current[key]) }
     end
   end
 
