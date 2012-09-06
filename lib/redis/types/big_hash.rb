@@ -5,11 +5,17 @@ module Redis::Types
 
     attr_accessor :default, :default_proc
 
-    def initialize(*args)
+    def initialize(*args, &default_proc)
       options = args.extract_options!
       self.key        = args.shift || options[:key]
       self.redis      = options[:redis]     if options[:redis].present?
       self.namespace  = options[:namespace] if options[:namespace].present?
+      if block_given?
+        self.default_proc = default_proc
+      else
+        self.default = options[:default] if options[:default].present?
+      end
+      self.merge!( options[:data] ) if options[:data].present?
     end
 
     def ==(other_hash)
@@ -41,6 +47,12 @@ module Redis::Types
     def each
       redis.hkeys( key ).each do |col|
         yield [ col, self[col] ]
+      end
+    end
+
+    def merge!(other_hash)
+      other_hash.each_pair do |key, value|
+        self[key] = value
       end
     end
 

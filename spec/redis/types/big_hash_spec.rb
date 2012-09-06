@@ -7,9 +7,27 @@ describe "Redis::Types::BigHash" do
     @hash[:foo] = "bar"
   end
 
-  describe "#save" do
-    it "should return true for compatibility" do
-      @hash.save.should be_true
+  describe ".new" do
+    it "should default to a non-null random key" do
+      Redis::Types::BigHash.new.key.should_not be_nil
+    end
+    it "should allow a key to be specified" do
+      h1 = Redis::Types::BigHash.new("foo")
+      h2 = Redis::Types::BigHash.new(:key => "bar")
+      h1.key.should == "foo"
+      h2.key.should == "bar"
+    end
+    it "should allow data to be supplied" do
+      hash = Redis::Types::BigHash.new :data => {:foo => "bar"}
+      hash[:foo].should == "bar"
+    end
+    it "should allow a default value to be supplied" do
+      hash = Redis::Types::BigHash.new :default => 17
+      hash[:missing].should == 17
+    end
+    it "should allow a default proc to be supplied" do
+      hash = Redis::Types::BigHash.new{ |hash, key| "#{key} bar"}
+      hash[:foo].should == "foo bar"
     end
   end
 
@@ -137,6 +155,12 @@ describe "Redis::Types::BigHash" do
     end
     it "should not find keys that haven't been added yet" do
       @hash.find{|k,v| k == "something" }.should be_nil
+    end
+  end
+
+  describe "#save" do
+    it "should return true for compatibility" do
+      @hash.save.should be_true
     end
   end
 
