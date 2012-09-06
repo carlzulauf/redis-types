@@ -147,6 +147,16 @@ describe "Redis::Types::BigHash" do
     end
   end
 
+  describe "#delete_if" do
+    it "should remove keys when the passed block returns true" do
+      @hash[:yin] = "yang"
+      @hash[:foo].should == "bar"
+      @hash.delete_if{|key,value| key == "foo" }
+      @hash[:foo].should be_nil
+      @hash[:yin].should == "yang"
+    end
+  end
+
   describe "#each" do
     it "should iterate through a hash with one value" do
       @hash.each do |key,value|

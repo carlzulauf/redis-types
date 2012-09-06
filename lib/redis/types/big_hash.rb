@@ -50,6 +50,13 @@ module Redis::Types
       (value.nil? and block_given?) ? fail.call(col) : value
     end
 
+    def delete_if(&block)
+      each_pair do |key, value|
+        yield(key, value) ? delete(key) : nil
+      end
+      self
+    end
+
     def each
       if block_given?
         redis.hkeys( key ).each do |col|
@@ -60,6 +67,8 @@ module Redis::Types
         to_a.each
       end
     end
+
+    alias_method :each_pair, :each
 
     def merge!(other_hash)
       other_hash.each_pair do |key, value|
