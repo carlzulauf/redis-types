@@ -24,6 +24,9 @@ module Redis::Types
       end
     end
 
+    # for compatibility with HashMap only. doesn't to ANYTHING.
+    def save; true; end
+
     def destroy
       redis.del key
     end

@@ -1,10 +1,16 @@
 require 'spec_helper'
 
 describe "Redis::Types::BigHash" do
-  
+
   before :each do
     @hash = Redis::Types::BigHash.new("test")
     @hash[:foo] = "bar"
+  end
+
+  describe "#save" do
+    it "should return true for compatibility" do
+      @hash.save.should be_true
+    end
   end
 
   describe "#[]" do
