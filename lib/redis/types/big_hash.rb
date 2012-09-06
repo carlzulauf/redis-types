@@ -10,6 +10,14 @@ module Redis::Types
       self.namespace  = options[:namespace] if options[:namespace].present?
     end
 
+    def ==(other_hash)
+      other_hash.key == key
+    end
+
+    def <=>(other_hash)
+      key <=> other_hash.key
+    end
+
     def [](col)
       Marshal.load( redis.hget key, col )
     end

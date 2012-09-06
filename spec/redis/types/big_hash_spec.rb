@@ -13,11 +13,37 @@ describe "Redis::Types::BigHash" do
     end
   end
 
+  describe "#==" do
+    it "should return true for hashes with the same key" do
+      hash = Redis::Types::BigHash.new("test")
+      (@hash == hash).should be_true
+    end
+    it "should return false for hashes with different keys" do
+      hash = Redis::Types::BigHash.new("foo")
+      (@hash == hash).should be_false
+    end
+  end
+
+  describe "#<=>" do
+    it "should return 0 when keys are the same" do
+      hash = Redis::Types::BigHash.new("test")
+      (@hash <=> hash).should == 0
+    end
+    it "should return a 1 when the right key comes before the left key alphabetically" do
+      hash = Redis::Types::BigHash.new("a key")
+      (@hash <=> hash).should == 1
+    end
+    it "should return a -1 when the right key comes after the left key alphabetically" do
+      hash = Redis::Types::BigHash.new("z key")
+      (@hash <=> hash).should == -1
+    end
+  end
+
   describe "#[]" do
     it "should read existing values" do
       @hash[:foo].should == "bar"
     end
-    it "should posess string/symbol indifferent access" do
+    it "should possess string/symbol indifferent access" do
       @hash["foo"].should == "bar"
     end
   end
