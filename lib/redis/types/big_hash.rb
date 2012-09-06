@@ -19,15 +19,13 @@ module Redis::Types
     end
 
     def each
-      @i    ||= 0
-      @keys ||= redis.hkeys( key )
-      col = @keys[@i]
-      yield [ col, self[col] ]
-      @i += 1
+      redis.hkeys( key ).each do |col|
+        yield [ col, self[col] ]
+      end
     end
 
-    def rewind
-      @i, @keys = nil, nil
+    def destroy
+      redis.del key
     end
   end
 end
