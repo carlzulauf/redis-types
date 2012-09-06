@@ -51,8 +51,13 @@ module Redis::Types
     end
 
     def each
-      redis.hkeys( key ).each do |col|
-        yield [ col, self[col] ]
+      if block_given?
+        redis.hkeys( key ).each do |col|
+          yield [ col, self[col] ]
+        end
+        self
+      else
+        to_a.each
       end
     end
 
