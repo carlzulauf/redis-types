@@ -3,6 +3,8 @@ module Redis::Types
     include ClientMethods
     include Enumerable
 
+    attr_accessor :default, :default_proc
+
     def initialize(*args)
       options = args.extract_options!
       self.key        = args.shift || options[:key]
@@ -19,11 +21,21 @@ module Redis::Types
     end
 
     def [](col)
-      Marshal.load( redis.hget key, col )
+      value = Marshal.load( redis.hget key, col )
+      if value.nil?
+        default_proc ? default_proc.call(self,col) : default
+      else
+        value
+      end
     end
 
     def []=(col, value)
       redis.hset key, col, Marshal.dump(value)
+    end
+
+    def assoc(key)
+      value = self[key]
+      value.nil? ? nil : [key, value]
     end
 
     def each
@@ -38,5 +50,7 @@ module Redis::Types
     def destroy
       redis.del key
     end
+    alias_method :clear, :destroy
+
   end
 end

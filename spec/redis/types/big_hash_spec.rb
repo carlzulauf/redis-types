@@ -46,6 +46,9 @@ describe "Redis::Types::BigHash" do
     it "should possess string/symbol indifferent access" do
       @hash["foo"].should == "bar"
     end
+    it "should return nil on missing keys" do
+      @hash["blah"].should be_nil
+    end
   end
 
   describe "#[]=" do
@@ -62,6 +65,52 @@ describe "Redis::Types::BigHash" do
       @hash[:key].test.should == "bar"
       @hash[:int].should      === 12_345
       @hash[:float].should    === 12.345
+    end
+  end
+
+  describe "#assoc" do
+    it "should return requested key and its value in an array" do
+      @hash.assoc(:foo).should == [:foo, "bar"]
+    end
+    it "should return nil on missing keys" do
+      @hash.assoc(:blah).should be_nil
+    end
+  end
+
+  describe "#clear" do
+    it "should remove everything" do
+      @hash[:yin] = "yang"
+      @hash.clear
+      @hash[:foo].should be_nil
+      @hash[:yin].should be_nil
+    end
+  end
+
+  describe "#default" do
+    it "should return nil by default" do
+      @hash.default.should be_nil
+    end
+  end
+
+  describe "#default=" do
+    it "should change what #default returns" do
+      @hash.default = "foo"
+      @hash.default.should == "foo"
+    end
+    it "should change what missing keys return" do
+      @hash.default = "foo"
+      @hash[:missing].should == "foo"
+    end
+  end
+
+  describe "#default_proc=" do
+    it "should change what #default_proc returns" do
+      @hash.default_proc = Proc.new{|hash, key| key + 1 }
+      @hash.default_proc.call({},1) == 2
+    end
+    it "should change what missing keys return" do
+      @hash.default_proc = Proc.new{|hash, key| "#{key} bar" }
+      @hash[:missing].should == "missing bar"
     end
   end
 
