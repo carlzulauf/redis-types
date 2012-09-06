@@ -176,7 +176,7 @@ describe "Redis::Types::BigHash" do
       @hash.each{|k,v| nil }.should be_a(Redis::Types::BigHash)
     end
     it "should return an Enumerator when no block is given" do
-      @hash.each.should be_a(Enumerator)
+      @hash.each.should be_a(Enumerable)
     end
   end
 
