@@ -132,6 +132,21 @@ describe "Redis::Types::BigHash" do
     end
   end
 
+  describe "#delete" do
+    it "should remove a single key" do
+      @hash.delete(:foo)
+      @hash[:foo].should be_nil
+    end
+    it "should leave other keys alone" do
+      @hash[:yin] = "yang"
+      @hash.delete(:foo)
+      @hash[:yin].should == "yang"
+    end
+    it "should return the current value" do
+      @hash.delete(:foo).should == "bar"
+    end
+  end
+
   describe "#each" do
     it "should iterate through a hash with one value" do
       @hash.each do |key,value|

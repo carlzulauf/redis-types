@@ -44,6 +44,12 @@ module Redis::Types
       value.nil? ? nil : [key, value]
     end
 
+    def delete(col, &fail)
+      value = self[col]
+      redis.hdel key, col
+      (value.nil? and block_given?) ? fail.call(col) : value
+    end
+
     def each
       redis.hkeys( key ).each do |col|
         yield [ col, self[col] ]
