@@ -180,6 +180,15 @@ describe "Redis::Types::BigHash" do
     end
   end
 
+  describe "#each_key" do
+    it "should iterate through all keys" do
+      @hash[:yin] = "yang"
+      @hash.each_key do |key|
+        %w{foo yin}.member?(key).should be_true
+      end
+    end
+  end
+
   describe "#find" do
     it "should find existing keys" do
       @hash.find{|k,v| k == "foo" }.should == ["foo", "bar"]

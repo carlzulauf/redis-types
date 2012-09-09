@@ -59,13 +59,21 @@ module Redis::Types
 
     def each
       if block_given?
-        redis.hkeys( key ).each do |col|
+        keys.each do |col|
           yield [ col, self[col] ]
         end
         self
       else
         to_a.each
       end
+    end
+
+    def each_key(&block)
+      keys.each(&block)
+    end
+
+    def keys
+      redis.hkeys key
     end
 
     alias_method :each_pair, :each
