@@ -102,6 +102,26 @@ module Redis::Types
       end
     end
 
+    def flatten
+      [].tap do |flat|
+        each_pair do |field, value|
+          flat << field
+          flat << value
+        end
+      end
+    end
+
+    def has_key?(field)
+      redis.hexists key, field
+    end
+    alias_method :include?, :has_key?
+    alias_method :key?,     :has_key?
+    alias_method :member?,  :has_key?
+
+    def has_value?(value)
+      values.any?{|v| v == value }
+    end
+
     def keys
       redis.hkeys key
     end
@@ -122,6 +142,10 @@ module Redis::Types
           hash[key] = value
         end
       end
+    end
+
+    def values
+      redis.hvals(key).map{|val|  Marshal.load(val) }
     end
 
     # for compatibility with HashMap only. doesn't to ANYTHING.

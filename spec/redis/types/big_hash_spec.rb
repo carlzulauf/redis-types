@@ -238,6 +238,30 @@ describe "Redis::Types::BigHash" do
     end
   end
 
+  describe "#flatten" do
+    it "should return a flat array of keys and values" do
+      @hash.flatten.should == ["foo", "bar"]
+    end
+  end
+
+  describe "#has_key?" do
+    it "should return true for an existing key" do
+      @hash.has_key?(:foo).should be_true
+    end
+    it "should return false for a missing key" do
+      @hash.has_key?(:bad).should be_false
+    end
+  end
+
+  describe "#has_value?" do
+    it "should return true for an existing value" do
+      @hash.has_value?("bar").should be_true
+    end
+    it "should return false for a missing value" do
+      @hash.has_value?("bad").should be_false
+    end
+  end
+
   describe "#find" do
     it "should find existing keys" do
       @hash.find{|k,v| k == "foo" }.should == ["foo", "bar"]
