@@ -223,6 +223,21 @@ describe "Redis::Types::BigHash" do
     end
   end
 
+  describe "#fetch" do
+    it "should return an existing value" do
+      @hash.fetch(:foo).should == "bar"
+    end
+    it "should return the default when the key doesn't exist" do
+      @hash.fetch(:bad, "default").should == "default"
+    end
+    it "should return the result of a block when passed a block and key doesn't exist" do
+      @hash.fetch(:bad){ "default" }.should == "default"
+    end
+    it "should raise a key error when key isn't present and no default given" do
+      expect{ @hash.fetch(:bad) }.to raise_error(KeyError)
+    end
+  end
+
   describe "#find" do
     it "should find existing keys" do
       @hash.find{|k,v| k == "foo" }.should == ["foo", "bar"]

@@ -88,6 +88,20 @@ module Redis::Types
       self == other or self.to_hash == other.to_hash
     end
 
+    def fetch(*args)
+      raise ArgumentError unless [1,2].include? args.length
+      field = args.first
+      if (value = self[field])
+        value
+      elsif block_given?
+        yield
+      elsif args.length == 2
+        args[1]
+      else
+        raise KeyError, %{field "#{field}" not found}
+      end
+    end
+
     def keys
       redis.hkeys key
     end
