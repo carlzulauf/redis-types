@@ -121,6 +121,7 @@ module Redis::Types
     def has_value?(value)
       values.any?{|v| v == value }
     end
+    alias_method :value?, :has_value?
 
     def keys
       redis.hkeys key
