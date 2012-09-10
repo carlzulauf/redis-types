@@ -18,8 +18,9 @@ module Redis::Types
       self.merge!( options[:data] ) if options[:data].present?
     end
 
-    def ==(other_hash)
-      other_hash.key == key
+    def ==(other)
+      return false unless other.respond_to? :namespace and other.respond_to? :key
+      other.namespace == namespace and other.key == key
     end
 
     def <=>(other_hash)
@@ -67,20 +68,45 @@ module Redis::Types
         to_a.each
       end
     end
+    alias_method :each_pair, :each
 
     def each_key(&block)
       keys.each(&block)
+    end
+
+    def each_value(&block)
+      each_pair do |key, value|
+        yield value
+      end
+    end
+
+    def empty?
+      length == 0
+    end
+
+    def eql?(other)
+      self == other or self.to_hash == other.to_hash
     end
 
     def keys
       redis.hkeys key
     end
 
-    alias_method :each_pair, :each
+    def length
+      redis.hlen key
+    end
 
     def merge!(other_hash)
       other_hash.each_pair do |key, value|
         self[key] = value
+      end
+    end
+
+    def to_hash
+      {}.tap do |hash|
+        each_pair do |key, value|
+          hash[key] = value
+        end
       end
     end
 

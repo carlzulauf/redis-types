@@ -20,6 +20,7 @@ describe "Redis::Types::BigHash" do
     it "should allow data to be supplied" do
       hash = Redis::Types::BigHash.new :data => {:foo => "bar"}
       hash[:foo].should == "bar"
+      hash.destroy
     end
     it "should allow a default value to be supplied" do
       hash = Redis::Types::BigHash.new :default => 17
@@ -186,6 +187,39 @@ describe "Redis::Types::BigHash" do
       @hash.each_key do |key|
         %w{foo yin}.member?(key).should be_true
       end
+    end
+  end
+
+  describe "#each_value" do
+    it "should iterate through all values" do
+      @hash[:yin] = "yang"
+      @hash.each_value do |value|
+        %w{bar yang}.member?(value).should be_true
+      end
+    end
+  end
+
+  describe "#empty?" do
+    it "should return false for a hash with values" do
+      @hash.empty?.should be_false
+    end
+    it "should return true for an empty hash" do
+      Redis::Types::BigHash.new("empty").empty?.should be_true
+    end
+  end
+
+  describe "#eql?" do
+    it "should return true for the same hash" do
+      hash = Redis::Types::BigHash.new("test")
+      @hash.eql?(hash).should be_true
+    end
+    it "should return false for different hash" do
+      hash = Redis::Types::BigHash.new("other")
+      @hash.eql?(hash).should be_false
+    end
+    it "should return true for any hash with the same contents" do
+      @hash.eql?("foo" => "bar").should be_true
+      @hash.eql?({:foo => "bar"}.with_indifferent_access).should be_true
     end
   end
 
