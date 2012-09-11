@@ -123,6 +123,10 @@ module Redis::Types
     end
     alias_method :value?, :has_value?
 
+    def hash
+      to_hash.hash
+    end
+
     def keys
       redis.hkeys key
     end

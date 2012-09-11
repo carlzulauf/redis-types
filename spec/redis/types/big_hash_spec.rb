@@ -262,6 +262,15 @@ describe "Redis::Types::BigHash" do
     end
   end
 
+  describe "#hash" do
+    it "should produce an identical hash to a Hash with the same contents" do
+      @hash.hash.should == {"foo" => "bar"}.hash
+    end
+    it "should produce a different hash than a Hash with different contents" do
+      @hash.hash.should_not == {"yin" => "yang"}.hash
+    end
+  end
+
   describe "#find" do
     it "should find existing keys" do
       @hash.find{|k,v| k == "foo" }.should == ["foo", "bar"]
