@@ -5,6 +5,8 @@ module Redis::Types
 
     attr_accessor :default, :default_proc
 
+    delegate :hash, :invert, :to => :to_hash
+
     def initialize(*args, &default_proc)
       options = args.extract_options!
       self.key        = args.shift || options[:key]
@@ -122,10 +124,6 @@ module Redis::Types
       values.any?{|v| v == value }
     end
     alias_method :value?, :has_value?
-
-    def hash
-      to_hash.hash
-    end
 
     def keys
       redis.hkeys key

@@ -271,6 +271,12 @@ describe "Redis::Types::BigHash" do
     end
   end
 
+  describe "#invert" do
+    it "should reverse the order of keys and values" do
+      @hash.invert.should == {"bar" => "foo"}
+    end
+  end
+
   describe "#find" do
     it "should find existing keys" do
       @hash.find{|k,v| k == "foo" }.should == ["foo", "bar"]
