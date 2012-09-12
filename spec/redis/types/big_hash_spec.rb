@@ -277,6 +277,21 @@ describe "Redis::Types::BigHash" do
     end
   end
 
+  describe "#key" do
+    it "should return the redis key if no argument is supplied" do
+      @hash.key.should == "test"
+    end
+    it "should return the value for a key when a key is supplied" do
+      @hash.key(:foo).should == "bar"
+    end
+    it "should return nil for when a key is supplied and doesn't exist" do
+      @hash.key(:bad).should be_nil
+    end
+    it "should raise an error when more than one argument is supplied" do
+      expect{ @hash.key(:one,:two) }.to raise_error(ArgumentError)
+    end
+  end
+
   describe "#find" do
     it "should find existing keys" do
       @hash.find{|k,v| k == "foo" }.should == ["foo", "bar"]

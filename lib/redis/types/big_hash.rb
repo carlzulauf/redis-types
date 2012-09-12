@@ -125,6 +125,20 @@ module Redis::Types
     end
     alias_method :value?, :has_value?
 
+    # ClientMethods already defines #key as the redis key.
+    # may need to re-examine this as HashMap#key doesn't work this way
+    alias_method :redis_key, :key
+    def key(*args)
+      case args.length
+      when 0
+        redis_key
+      when 1
+        fetch(args.first, nil)
+      else
+        raise ArgumentError
+      end
+    end
+
     def keys
       redis.hkeys key
     end
