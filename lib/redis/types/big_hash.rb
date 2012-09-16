@@ -127,11 +127,11 @@ module Redis::Types
 
     # ClientMethods already defines #key as the redis key.
     # may need to re-examine this as HashMap#key doesn't work this way
-    alias_method :redis_key, :key
+    alias_method :__key__, :key
     def key(*args)
       case args.length
       when 0
-        redis_key
+        __key__
       when 1
         fetch(args.first, nil)
       else

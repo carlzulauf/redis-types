@@ -16,6 +16,17 @@ module Redis::Types
       merge!(options[:data]) if options[:data].present?
     end
 
+    alias_method :__key__, :key
+    def key(*args)
+      if args.empty?
+        __key__
+      elsif args.one?
+        current.fetch(args.first, nil)
+      else
+        raise ArgumentError
+      end
+    end
+
     def save
       data = {}
       current.each_pair do |k,v|

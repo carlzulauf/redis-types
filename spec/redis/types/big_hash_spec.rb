@@ -238,6 +238,15 @@ describe "Redis::Types::BigHash" do
     end
   end
 
+  describe "#find" do
+    it "should find existing keys" do
+      @hash.find{|k,v| k == "foo" }.should == ["foo", "bar"]
+    end
+    it "should not find keys that haven't been added yet" do
+      @hash.find{|k,v| k == "something" }.should be_nil
+    end
+  end
+
   describe "#flatten" do
     it "should return a flat array of keys and values" do
       @hash.flatten.should == ["foo", "bar"]
@@ -292,12 +301,9 @@ describe "Redis::Types::BigHash" do
     end
   end
 
-  describe "#find" do
-    it "should find existing keys" do
-      @hash.find{|k,v| k == "foo" }.should == ["foo", "bar"]
-    end
-    it "should not find keys that haven't been added yet" do
-      @hash.find{|k,v| k == "something" }.should be_nil
+  describe "#keys" do
+    it "should return an array of existing keys" do
+      @hash.keys.should == ["foo"]
     end
   end
 

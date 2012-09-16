@@ -284,6 +284,18 @@ describe "Redis::Types::HashMap" do
     end
   end
 
+  describe "#key" do
+    it "should return the redis key when no argument is supplied" do
+      @hash.key.should == "test"
+    end
+    it "should return the value for a key when a key is supplied" do
+      @hash.key(:foo).should == "bar"
+    end
+    it "should return nil when a non-existent key is supplied" do
+      @hash.key(:bad).should be_nil
+    end
+  end
+
   # ==============================================
   # Marshaling tests
   # ==============================================
