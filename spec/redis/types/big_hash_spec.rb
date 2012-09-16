@@ -307,6 +307,14 @@ describe "Redis::Types::BigHash" do
     end
   end
 
+  describe "#length" do
+    it "should return the length of the hash" do
+      @hash.length.should == 1
+      @hash[:yin] = "yang"
+      @hash.length.should == 2
+    end
+  end
+
   describe "#save" do
     it "should return true for compatibility" do
       @hash.save.should be_true
