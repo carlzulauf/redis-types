@@ -329,6 +329,15 @@ describe "Redis::Types::BigHash" do
     end
   end
 
+  describe "#rassoc" do
+    it "should return the first key/value pair matching the given value" do
+      @hash.rassoc("bar").should == ["foo", "bar"]
+    end
+    it "should return nil when the provided value is not present" do
+      @hash.rassoc("bad").should be_nil
+    end
+  end
+
   describe "#save" do
     it "should return true for compatibility" do
       @hash.save.should be_true

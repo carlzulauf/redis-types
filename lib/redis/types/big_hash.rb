@@ -154,6 +154,13 @@ module Redis::Types
       self
     end
 
+    def rassoc(value)
+      each do |field, val|
+        return [field, val] if val == value
+      end
+      nil
+    end
+
     def to_hash
       HashWithIndifferentAccess.new.tap do |hash|
         each_pair do |key, value|
