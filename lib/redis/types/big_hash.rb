@@ -151,6 +151,7 @@ module Redis::Types
       other_hash.each_pair do |key, value|
         self[key] = value
       end
+      self
     end
 
     def to_hash

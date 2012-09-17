@@ -323,6 +323,12 @@ describe "Redis::Types::BigHash" do
     end
   end
 
+  describe "#merge!" do
+    it "should merge the provided hash into the current hash" do
+      @hash.merge!(yin: "yang").eql?("foo" => "bar", "yin" => "yang").should be_true
+    end
+  end
+
   describe "#save" do
     it "should return true for compatibility" do
       @hash.save.should be_true
