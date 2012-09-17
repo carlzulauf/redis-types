@@ -325,7 +325,7 @@ describe "Redis::Types::BigHash" do
 
   describe "#merge!" do
     it "should merge the provided hash into the current hash" do
-      @hash.merge!(yin: "yang").eql?("foo" => "bar", "yin" => "yang").should be_true
+      @hash.merge!(:yin => "yang").eql?("foo" => "bar", "yin" => "yang").should be_true
     end
   end
 
