@@ -315,6 +315,14 @@ describe "Redis::Types::BigHash" do
     end
   end
 
+  describe "#merge" do
+    it "should return a hash with both the current and provided hash merged together" do
+      h = @hash.merge({:yin => "yang"})
+      h[:foo].should == "bar"
+      h[:yin].should == "yang"
+    end
+  end
+
   describe "#save" do
     it "should return true for compatibility" do
       @hash.save.should be_true

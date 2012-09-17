@@ -5,7 +5,7 @@ module Redis::Types
 
     attr_accessor :default, :default_proc
 
-    delegate :hash, :invert, :to => :to_hash
+    delegate :hash, :invert, :merge, :to => :to_hash
 
     def initialize(*args, &default_proc)
       options = args.extract_options!
@@ -154,7 +154,7 @@ module Redis::Types
     end
 
     def to_hash
-      {}.tap do |hash|
+      HashWithIndifferentAccess.new.tap do |hash|
         each_pair do |key, value|
           hash[key] = value
         end
