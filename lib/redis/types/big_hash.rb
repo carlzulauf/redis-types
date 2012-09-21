@@ -47,9 +47,9 @@ module Redis::Types
       value.nil? ? nil : [key, value]
     end
 
-    def delete(col, &fail)
+    def delete(*col, &fail)
       value = self[col]
-      redis.hdel key, col
+      redis.hdel key, *col
       (value.nil? and block_given?) ? fail.call(col) : value
     end
 
@@ -163,6 +163,24 @@ module Redis::Types
 
     def reject(&block)
       to_hash.delete_if(&block)
+    end
+
+    def reject!(&block)
+      rejects = []
+      each do |field, value|
+        rejects << field if yield field, value
+      end
+      if rejects.any?
+        delete *rejects
+        self
+      else
+        nil
+      end
+    end
+
+    def replace(other)
+      destroy
+      merge! other
     end
 
     def to_hash

@@ -339,9 +339,32 @@ describe "Redis::Types::BigHash" do
   end
 
   describe "#reject" do
-    it "should return a new hash, excluding pairs where block returns true" do
+    it "should return a new hash excluding pairs where block returns true" do
       @hash[:yin] = "yang"
       @hash.reject{|k,v| k == "foo" }.eql?("yin" => "yang").should be_true
+    end
+  end
+
+  describe "#reject!" do
+    it "should remove pairs from hash where block returns true" do
+      @hash[:yin] = "yang"
+      @hash.reject!{|k,v| k == "foo"}
+      puts @hash.to_hash.inspect
+      @hash.eql?("yin" => "yang").should be_true
+    end
+    it "should return self if any elements were removed" do
+      @hash[:yin] = "yang"
+      @hash.reject!{|k,v| k == "foo"}.eql?("yin" => "yang").should be_true
+    end
+    it "should return nil when no changes were made" do
+      @hash.reject!{|k,v| k == "bad"}.should be_nil
+    end
+  end
+
+  describe "#replace" do
+    it "should replace the contents of the hash with the supplied hash" do
+      @hash.replace(:yin => "yang")
+      @hash.eql?("yin" => "yang").should be_true
     end
   end
 
