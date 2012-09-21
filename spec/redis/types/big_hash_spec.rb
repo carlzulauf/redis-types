@@ -349,7 +349,6 @@ describe "Redis::Types::BigHash" do
     it "should remove pairs from hash where block returns true" do
       @hash[:yin] = "yang"
       @hash.reject!{|k,v| k == "foo"}
-      puts @hash.to_hash.inspect
       @hash.eql?("yin" => "yang").should be_true
     end
     it "should return self if any elements were removed" do
@@ -365,6 +364,28 @@ describe "Redis::Types::BigHash" do
     it "should replace the contents of the hash with the supplied hash" do
       @hash.replace(:yin => "yang")
       @hash.eql?("yin" => "yang").should be_true
+    end
+  end
+
+  describe "#select" do
+    it "should return a hash including only pairs where the block returns true" do
+      @hash[:yin] = "yang"
+      @hash.select{|k,v| k == "foo"}.eql?("foo" => "bar").should be_true
+    end
+  end
+
+  describe "#select!" do
+    it "should keep pairs in hash when block returns true" do
+      @hash[:yin] = "yang"
+      @hash.select!{|k,v| k == "foo"}
+      @hash.eql?("foo" => "bar").should be_true
+    end
+    it "should return self if any elements were selected" do
+      @hash[:yin] = "yang"
+      @hash.select!{|k,v| k == "foo"}.eql?("foo" => "bar").should be_true
+    end
+    it "should return nil when no changes were made" do
+      @hash.select!{|k,v| %w{foo yin}.member?(k) }.should be_nil
     end
   end
 

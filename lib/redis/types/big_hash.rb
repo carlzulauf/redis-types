@@ -5,7 +5,7 @@ module Redis::Types
 
     attr_accessor :default, :default_proc
 
-    delegate :hash, :invert, :merge, :to => :to_hash
+    delegate :hash, :invert, :merge, :reject, :select, :to => :to_hash
 
     def initialize(*args, &default_proc)
       options = args.extract_options!
@@ -161,26 +161,17 @@ module Redis::Types
       nil
     end
 
-    def reject(&block)
-      to_hash.delete_if(&block)
-    end
-
     def reject!(&block)
-      rejects = []
-      each do |field, value|
-        rejects << field if yield field, value
-      end
-      if rejects.any?
-        delete *rejects
-        self
-      else
-        nil
-      end
+      reject_or_select(true, &block)
     end
 
     def replace(other)
       destroy
       merge! other
+    end
+
+    def select!(&block)
+      reject_or_select(false, &block)
     end
 
     def to_hash
@@ -203,5 +194,19 @@ module Redis::Types
     end
     alias_method :clear, :destroy
 
+    private
+
+    def reject_or_select(reject = true, &block)
+      rejects = []
+      each do |field, value|
+        rejects << field if !!yield(field, value) == reject
+      end
+      if rejects.any?
+        delete *rejects
+        self
+      else
+        nil
+      end
+    end
   end
 end
