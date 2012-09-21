@@ -369,8 +369,10 @@ describe "Redis::Types::BigHash" do
 
   describe "#select" do
     it "should return a hash including only pairs where the block returns true" do
+      # Ruby 1.8 actually returns an array, so we cast to array before compare
       @hash[:yin] = "yang"
-      @hash.select{|k,v| k == "foo"}.eql?("foo" => "bar").should be_true
+      r = @hash.select{|k,v| k == "foo"}
+      r.to_a.eql?({"foo" => "bar"}.to_a).should be_true
     end
   end
 

@@ -146,6 +146,7 @@ module Redis::Types
     def length
       redis.hlen key
     end
+    alias_method :size, :length
 
     def merge!(other_hash)
       other_hash.each_pair do |key, value|
