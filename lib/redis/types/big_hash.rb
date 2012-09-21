@@ -161,6 +161,10 @@ module Redis::Types
       nil
     end
 
+    def reject(&block)
+      to_hash.delete_if(&block)
+    end
+
     def to_hash
       HashWithIndifferentAccess.new.tap do |hash|
         each_pair do |key, value|

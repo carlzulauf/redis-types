@@ -338,6 +338,13 @@ describe "Redis::Types::BigHash" do
     end
   end
 
+  describe "#reject" do
+    it "should return a new hash, excluding pairs where block returns true" do
+      @hash[:yin] = "yang"
+      @hash.reject{|k,v| k == "foo" }.eql?("yin" => "yang").should be_true
+    end
+  end
+
   describe "#save" do
     it "should return true for compatibility" do
       @hash.save.should be_true
