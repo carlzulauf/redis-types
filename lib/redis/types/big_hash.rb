@@ -175,6 +175,15 @@ module Redis::Types
       reject_or_select(false, &block)
     end
 
+    def shift
+      fields = keys
+      if fields.empty?
+        default
+      else
+        [fields.first, delete(fields.first)]
+      end
+    end
+
     def to_hash
       HashWithIndifferentAccess.new.tap do |hash|
         each_pair do |key, value|

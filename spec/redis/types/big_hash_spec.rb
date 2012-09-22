@@ -391,6 +391,17 @@ describe "Redis::Types::BigHash" do
     end
   end
 
+  describe "#shift" do
+    it "should remove and return a key/value pair form the hash" do
+      @hash.shift.should == ["foo", "bar"]
+      @hash.empty?.should be_true
+    end
+    it "should return nil if no values are removed" do
+      @hash.clear
+      @hash.shift.should be_nil
+    end
+  end
+
   describe "#save" do
     it "should return true for compatibility" do
       @hash.save.should be_true
