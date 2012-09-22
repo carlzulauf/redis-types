@@ -402,6 +402,13 @@ describe "Redis::Types::BigHash" do
     end
   end
 
+  describe "#store" do
+    it "should store the key and value provided" do
+      @hash.store(:yin, "yang")
+      @hash[:yin].should == "yang"
+    end
+  end
+
   describe "#save" do
     it "should return true for compatibility" do
       @hash.save.should be_true

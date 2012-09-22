@@ -184,6 +184,10 @@ module Redis::Types
       end
     end
 
+    def store(field, value)
+      self[field] = value
+    end
+
     def to_hash
       HashWithIndifferentAccess.new.tap do |hash|
         each_pair do |key, value|
