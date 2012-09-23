@@ -1,4 +1,4 @@
-module Redis::Types::HashMap::TrackChanges
+module Redis::Types::Hash::TrackChanges
   def original; @original; end
 
   def changes

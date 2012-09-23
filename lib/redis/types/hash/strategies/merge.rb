@@ -1,9 +1,9 @@
 # Attempts to merge concurrently made changes.
 # Gives priority to the changes made concurrently
 # when there is a conflict.
-module Redis::Types::HashMap::Strategies::Merge
+module Redis::Types::Hash::Strategies::Merge
   def self.extend_object(obj)
-    obj.extend Redis::Types::HashMap::TrackChanges
+    obj.extend Redis::Types::Hash::TrackChanges
     super
   end
 

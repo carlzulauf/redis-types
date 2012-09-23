@@ -1,5 +1,5 @@
 module Redis::Types
-  class HashMap < Delegator
+  class Hash < Delegator
     include ClientMethods
     attr_reader :current, :strategy
 
@@ -59,7 +59,7 @@ module Redis::Types
     end
 
     module Strategies
-      # Namespace for HashMap strategies
+      # Namespace for Hash strategies
     end
 
   end

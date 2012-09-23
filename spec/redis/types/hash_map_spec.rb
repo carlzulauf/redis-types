@@ -1,33 +1,33 @@
 require 'spec_helper'
 
-describe "Redis::Types::HashMap" do
+describe "Redis::Types::Hash" do
   before :each do
-    @hash = Redis::Types::HashMap.new("test")
+    @hash = Redis::Types::Hash.new("test")
     @hash[:foo] = "bar"
     @hash.save
   end
 
   # ==============================================
-  # `HashMap` specific methods
+  # `Hash` specific methods
   # ==============================================
 
   describe "#new" do
     it "should create an empty hash by default" do
-      Redis::Types::HashMap.new("foo").should be_empty
+      Redis::Types::Hash.new("foo").should be_empty
     end
     it "should generate a key if one is not provided" do
-      Redis::Types::HashMap.new.key.should_not be_nil
+      Redis::Types::Hash.new.key.should_not be_nil
     end
     it "should open an existing hash when provided a key" do
-      hash = Redis::Types::HashMap.new("test")
+      hash = Redis::Types::Hash.new("test")
       hash[:foo].should == "bar"
     end
     it "should allow the key to be provided in option hash" do
-      hash = Redis::Types::HashMap.new(:key => :test)
+      hash = Redis::Types::Hash.new(:key => :test)
       hash[:foo].should == "bar"
     end
     it "should merge values when data is provided in option hash" do
-      hash = Redis::Types::HashMap.new("test", :data => {:yin => "yang"})
+      hash = Redis::Types::Hash.new("test", :data => {:yin => "yang"})
       hash[:foo].should == "bar"
       hash[:yin].should == "yang"
     end
@@ -35,7 +35,7 @@ describe "Redis::Types::HashMap" do
 
   describe "#save" do
     it "should cause the hash to persist" do
-      hash = Redis::Types::HashMap.new("foo", :data => {:key => "value"})
+      hash = Redis::Types::Hash.new("foo", :data => {:key => "value"})
       $redis.hgetall("foo").should == {}
       hash.save
       $redis.hgetall("foo").should == {"key" => "value"}
@@ -43,7 +43,7 @@ describe "Redis::Types::HashMap" do
     end
     context "with replace strategy" do
       it "should overwrite concurrent changes made to the hash" do
-        hash = Redis::Types::HashMap.new "test", :strategy => :replace
+        hash = Redis::Types::Hash.new "test", :strategy => :replace
         @hash[:foo] = "something else"
         @hash[:yin] = "yang"
         @hash.save
@@ -85,7 +85,7 @@ describe "Redis::Types::HashMap" do
   # merge strategy
   context ":merge strategy" do
     before :each do
-      @hash = Redis::Types::HashMap.new( @hash.key, :strategy => :merge )
+      @hash = Redis::Types::Hash.new( @hash.key, :strategy => :merge )
     end
     describe "#changes" do
       it "should contain recently added keys" do
@@ -148,12 +148,12 @@ describe "Redis::Types::HashMap" do
         @hash[:key] = "value"
         @hash.delete(:foo)
         @hash.save
-        hash = Redis::Types::HashMap.new( @hash.key, :strategy => :merge )
+        hash = Redis::Types::Hash.new( @hash.key, :strategy => :merge )
         hash[:yin].should == "yang"
         hash[:foo].should be_nil
       end
       it "should incorporate concurrently made changes" do
-        concurrent = Redis::Types::HashMap.new( @hash.key, :strategy => :merge )
+        concurrent = Redis::Types::Hash.new( @hash.key, :strategy => :merge )
         concurrent[:yin] = "yang"
         concurrent.delete(:foo)
         @hash[:yin].should be_nil
@@ -173,11 +173,11 @@ describe "Redis::Types::HashMap" do
   # change strategy
   context ":change strategy" do
     before :each do
-      @hash = Redis::Types::HashMap.new( "test", :strategy => :change )
+      @hash = Redis::Types::Hash.new( "test", :strategy => :change )
     end
     describe "#save" do
       it "should incorporate concurrently made changes, unless changed in current" do
-        concurrent = Redis::Types::HashMap.new( "test", :strategy => :change )
+        concurrent = Redis::Types::Hash.new( "test", :strategy => :change )
         concurrent.delete(:foo)
         concurrent[:yin] = "yang"
         concurrent[:key] = "value"
@@ -194,11 +194,11 @@ describe "Redis::Types::HashMap" do
   # lock strategy
   context ":lock strategy" do
     before :each do
-      @hash = Redis::Types::HashMap.new( "test", :strategy => :lock )
+      @hash = Redis::Types::Hash.new( "test", :strategy => :lock )
     end
     describe "[]=" do
       it "should raise an error when called before being locked" do
-        expect{ @hash[:yin] = "yang" }.to raise_error(Redis::Types::HashMap::Strategies::Lock::Error)
+        expect{ @hash[:yin] = "yang" }.to raise_error(Redis::Types::Hash::Strategies::Lock::Error)
       end
       it "should allow changes after being locked" do
         @hash.lock
@@ -208,7 +208,7 @@ describe "Redis::Types::HashMap" do
     end
     describe "#save" do
       it "should raise error when called without being locked" do
-        expect{ @hash.save }.to raise_error(Redis::Types::HashMap::Strategies::Lock::Error)
+        expect{ @hash.save }.to raise_error(Redis::Types::Hash::Strategies::Lock::Error)
       end
       it "should save changes after being locked" do
         @hash.lock
@@ -218,12 +218,12 @@ describe "Redis::Types::HashMap" do
         $redis.hget("test", "yin").should == "yang"
       end
       it "should raise error when another hash has a lock" do
-        concurrent = Redis::Types::HashMap.new("test", :strategy => :lock)
+        concurrent = Redis::Types::Hash.new("test", :strategy => :lock)
         concurrent.lock
-        expect{ @hash.lock }.to raise_error(Redis::Types::HashMap::Strategies::Lock::Error)
+        expect{ @hash.lock }.to raise_error(Redis::Types::Hash::Strategies::Lock::Error)
       end
       it "should overwrite incorporate changes made before being locked" do
-        concurrent = Redis::Types::HashMap.new("test", :strategy => :lock)
+        concurrent = Redis::Types::Hash.new("test", :strategy => :lock)
         concurrent.lock
         concurrent[:yin] = "yang"
         concurrent.save
@@ -258,7 +258,7 @@ describe "Redis::Types::HashMap" do
     it "should remove the specified key from the hash" do
       @hash.delete(:foo)
       @hash.save
-      Redis::Types::HashMap.new("test")[:foo].should be_nil
+      Redis::Types::Hash.new("test")[:foo].should be_nil
     end
   end
 

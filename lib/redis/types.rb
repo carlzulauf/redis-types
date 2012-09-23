@@ -9,11 +9,11 @@ require 'redis/namespace'
 require 'redis/types/marshal'
 require 'redis/types/client_methods'
 
-require 'redis/types/hash_map'
-require 'redis/types/hash_map/track_changes'
-require 'redis/types/hash_map/strategies/merge'
-require 'redis/types/hash_map/strategies/change'
-require 'redis/types/hash_map/strategies/lock'
+require 'redis/types/hash'
+require 'redis/types/hash/track_changes'
+require 'redis/types/hash/strategies/merge'
+require 'redis/types/hash/strategies/change'
+require 'redis/types/hash/strategies/lock'
 
 require 'redis/types/big_hash'
 
@@ -28,10 +28,10 @@ class Redis
           if type =~ /big_hash/
             BigHash.new(key, options)
           elsif type =~ /hash_map/
-            HashMap.new(key, options)
+            Hash.new(key, options)
           else
             if redis.object(:encoding, key) == "zipmap"
-              HashMap.new(key, options)
+              Hash.new(key, options)
             else
               BigHash.new(key, options)
             end

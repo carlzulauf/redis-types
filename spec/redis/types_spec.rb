@@ -25,16 +25,16 @@ describe "Redis::Types" do
       $redis.set :string, "a typical string"
     end
 
-    it "should load a HashMap for small Redis hashes" do
-      Redis::Types.load(:small_hash).should be_a(Redis::Types::HashMap)
+    it "should load a Hash for small Redis hashes" do
+      Redis::Types.load(:small_hash).should be_a(Redis::Types::Hash)
     end
 
     it "should load a BigHash for big Redis hashes" do
       Redis::Types.load(:big_hash).should be_a(Redis::Types::BigHash)
     end
 
-    it "should load a HashMap when explicitly told to" do
-      Redis::Types.load(:big_hash, :type => :hash_map).should be_a(Redis::Types::HashMap)
+    it "should load a Hash when explicitly told to" do
+      Redis::Types.load(:big_hash, :type => :hash_map).should be_a(Redis::Types::Hash)
     end
 
     it "should load a String for Redis strings" do

@@ -1,7 +1,7 @@
 # Hash must be locked before it can be saved. Error is
 # raised when attempting to lock a hash that is already
 # locked.
-module Redis::Types::HashMap::Strategies::Lock
+module Redis::Types::Hash::Strategies::Lock
   LOCK_TIMEOUT_SECONDS = 5 * 60
   
   def self.extend_object(obj)
