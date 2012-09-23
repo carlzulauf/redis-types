@@ -23,6 +23,7 @@ describe "Redis::Types" do
         $redis.hmset :big_hash, *(0..1_000).map {|i| ["key#{i}", "value#{i}"] }
       end while $redis.object(:encoding, :big_hash) == "zipmap"
       $redis.set :string, "a typical string"
+      $redis.lpush :list, "foo"
     end
 
     it "should load a Hash for small Redis hashes" do
@@ -41,8 +42,12 @@ describe "Redis::Types" do
       Redis::Types.load(:string).should be_a(String)
     end
 
+    it "should load an Array for Redis lists" do
+      Redis::Types.load(:list).should be_a(Redis::Types::Array)
+    end
+
     after :all do
-      $redis.del :small_hash, :big_hash, :string
+      $redis.del :small_hash, :big_hash, :string, :list
     end
   end
 end

@@ -17,6 +17,8 @@ require 'redis/types/hash/strategies/lock'
 
 require 'redis/types/big_hash'
 
+require 'redis/types/array'
+
 class Redis
   module Types
     class << self
@@ -38,6 +40,8 @@ class Redis
           end
         when "string"
           Marshal.load redis.get( key )
+        when "list"
+          Array.new( key, options )
         end
       end
       alias_method :open, :load
