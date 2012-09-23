@@ -154,6 +154,7 @@ module Redis::Types
       end
       self
     end
+    alias_method :udpate, :merge!
 
     def rassoc(value)
       each do |field, val|
@@ -198,6 +199,10 @@ module Redis::Types
 
     def values
       redis.hvals(key).map{|val|  Marshal.load(val) }
+    end
+
+    def values_at(*fields)
+      fields.map{|f| self[f] }
     end
 
     # for compatibility with HashMap only. doesn't to ANYTHING.

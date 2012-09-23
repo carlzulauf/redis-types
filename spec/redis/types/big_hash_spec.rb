@@ -409,6 +409,13 @@ describe "Redis::Types::BigHash" do
     end
   end
 
+  describe "#values_at" do
+    it "should return values for the specified keys" do
+      @hash[:yin] = "yang"
+      @hash.values_at(:foo, :yin).should == ["bar", "yang"]
+    end
+  end
+
   describe "#save" do
     it "should return true for compatibility" do
       @hash.save.should be_true
