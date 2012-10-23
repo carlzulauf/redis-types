@@ -19,6 +19,8 @@ require 'redis/types/big_hash'
 
 require 'redis/types/array'
 
+require 'redis/types/list'
+
 class Redis
   module Types
     class << self
