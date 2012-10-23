@@ -20,7 +20,7 @@ module Redis::Types
       if block_given?
         i, c = 0, length
         while i < c
-          yield redis.lindex( key, i )
+          yield Marshal.load( redis.lindex( key, i ) )
           i += 1
         end
         self

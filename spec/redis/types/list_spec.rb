@@ -5,6 +5,9 @@ describe Redis::Types::List do
     $redis.rpush "test", "foo"
     $redis.rpush "test", "bar"
     @a = Redis::Types::List.new "test"
+    unless defined?(TestStruct)
+      TestStruct = Struct.new(:foo, :yin)
+    end
   end
   
   describe "#<<" do
@@ -29,6 +32,13 @@ describe Redis::Types::List do
         i += 1
       end
     end
+    it "should yield unmarshalled arbitrary objects" do
+      a = Redis::Types::List.new "each_marshal"
+      a << TestStruct.new("bar", "yang")
+      v = a.pop
+      v.foo.should == "bar"
+      v.yin.should == "yang"
+    end
   end
 
   describe "#pop" do
@@ -37,9 +47,6 @@ describe Redis::Types::List do
       @a.length.should == 1
     end
     it "should unmarshall arbitrary objects" do
-      unless defined?(TestStruct)
-        TestStruct = Struct.new(:foo, :yin)
-      end
       @a << TestStruct.new("bar", "yang")
       v = @a.pop
       v.foo.should == "bar"
