@@ -24,6 +24,18 @@ describe Redis::Types::Array do
     end
   end
 
+  describe "#pop" do
+    it "should unmarshal arbitrary objects" do
+      TestStruct = Struct.new(:foo, :yin)
+      @a << TestStruct.new("bar", "yang")
+      @a.save
+      a = Redis::Types::Array.new "test"
+      v = a.pop
+      v.foo.should == "bar"
+      v.yin.should == "yang"
+    end
+  end
+
   after :each do
     $redis.del "test"
   end

@@ -17,12 +17,12 @@ module Redis::Types
     end
 
     def reload
-      self.current = redis.lrange key, 0, -1
+      self.current = redis.lrange(key, 0, -1).map{|v| Marshal.load v }
     end
 
     def save
       redis.del   key
-      redis.rpush key, current
+      redis.rpush key, current.map{|v| Marshal.dump v }
     end
   end
 end
