@@ -15,6 +15,15 @@ describe Redis::Types::Array do
     end
   end
 
+  describe "#save" do
+    it "should persist the array to Redis" do
+      @a << "pop"
+      @a.save
+      a = Redis::Types::Array.new "test"
+      a.pop.should == "pop"
+    end
+  end
+
   after :each do
     $redis.del "test"
   end

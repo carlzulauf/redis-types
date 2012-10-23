@@ -19,5 +19,10 @@ module Redis::Types
     def reload
       self.current = redis.lrange key, 0, -1
     end
+
+    def save
+      redis.del   key
+      redis.rpush key, current
+    end
   end
 end
