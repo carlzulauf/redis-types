@@ -11,8 +11,10 @@ module Redis::Types
     end
 
     def <<(value)
-      redis.rpush key, value
+      redis.rpush key, Marshal.dump( value )
+      self
     end
+    alias_method :push, :<<
 
     def each
       if block_given?
@@ -32,14 +34,14 @@ module Redis::Types
     end
 
     def pop
-      redis.rpop key
+      Marshal.load( redis.rpop key )
     end
 
     # Here for compatability with Redis::Types::Array only. Does nothing.
     def save; true; end
 
     def to_a
-      redis.lrange 0, -1
+      redis.lrange( 0, -1 ).map{|v| Marshal.load v }
     end
   end
 end

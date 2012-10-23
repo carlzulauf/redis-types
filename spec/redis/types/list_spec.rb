@@ -13,6 +13,11 @@ describe Redis::Types::List do
       @a << "value"
       @a.length.should == 3
     end
+    it "should allow chaining" do
+      @a.length.should == 2
+      @a << "value1" << "value2"
+      @a.length.should == 4
+    end
   end
 
   describe "#each" do
@@ -23,6 +28,22 @@ describe Redis::Types::List do
         value.should == "bar" if i == 1
         i += 1
       end
+    end
+  end
+
+  describe "#pop" do
+    it "should remove and return the last element" do
+      @a.pop.should == "bar"
+      @a.length.should == 1
+    end
+    it "should unmarshall arbitrary objects" do
+      unless defined?(TestStruct)
+        TestStruct = Struct.new(:foo, :yin)
+      end
+      @a << TestStruct.new("bar", "yang")
+      v = @a.pop
+      v.foo.should == "bar"
+      v.yin.should == "yang"
     end
   end
 
