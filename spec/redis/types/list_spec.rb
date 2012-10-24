@@ -5,9 +5,6 @@ describe Redis::Types::List do
     $redis.rpush "test", "foo"
     $redis.rpush "test", "bar"
     @a = Redis::Types::List.new "test"
-    unless defined?(TestStruct)
-      TestStruct = Struct.new(:foo, :yin)
-    end
   end
   
   describe "#<<" do

@@ -26,7 +26,6 @@ describe Redis::Types::Array do
 
   describe "#pop" do
     it "should unmarshal arbitrary objects" do
-      TestStruct = Struct.new(:foo, :yin)
       @a << TestStruct.new("bar", "yang")
       @a.save
       a = Redis::Types::Array.new "test"

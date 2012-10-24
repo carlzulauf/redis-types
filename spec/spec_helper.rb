@@ -6,3 +6,6 @@ require 'securerandom'
 require 'redis/types'
 
 $redis = Redis.current = Redis::Namespace.new( SecureRandom.hex )
+unless defined?(TestStruct)
+  TestStruct = Struct.new(:foo, :yin)
+end
