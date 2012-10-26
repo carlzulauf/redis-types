@@ -16,7 +16,7 @@ module Redis::Types::ClientMethods
   def namespace=(ns)
     if ns.present?
       redis = self.redis.kind_of?(Redis::Namespace) ? self.redis.redis : self.redis
-      self.redis = Redis::Namespace.new(ns, redis: redis)
+      self.redis = Redis::Namespace.new(ns, :redis => redis)
     else
       self.redis = self.redis.redis if self.redis.kind_of?(Redis::Namespace)
     end
