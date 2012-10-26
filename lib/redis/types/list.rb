@@ -3,7 +3,7 @@ module Redis::Types
     include ClientMethods
     include Enumerable
 
-    delegate :&, :*, :+, :-, :to => :to_a
+    delegate :&, :*, :+, :-, :abbrev, :assoc, :to => :to_a
 
     def initialize(*args)
       options         = args.extract_options!

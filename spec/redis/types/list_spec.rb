@@ -67,6 +67,26 @@ describe Redis::Types::List do
     end
   end
 
+  describe "#abbrev" do
+    it "should provide a hash of abbreviations" do
+      require 'abbrev'
+      @a.abbrev.should == {"fo"=>"foo", "f"=>"foo", "ba"=>"bar", "b"=>"bar", "foo"=>"foo", "bar"=>"bar"}
+    end
+  end
+
+  describe "#assoc" do
+    it "should return the first member array whose first value matches supplied value" do
+      t = Redis::Types::List.new
+      t << %w{foo bar} << %w{yin yang}
+      t.assoc("yin").should == %w{yin yang}
+    end
+    it "should return nil when the supplied value is not found" do
+      t = Redis::Types::List.new
+      t << %w{foo bar} << %w{yin yang}
+      t.assoc("yang").should be_nil
+    end
+  end
+
   describe "#each" do
     it "should iterate through the values in order" do
       i = 0
