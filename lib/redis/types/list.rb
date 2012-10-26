@@ -3,6 +3,8 @@ module Redis::Types
     include ClientMethods
     include Enumerable
 
+    delegate :&, :*, :+, :-, :to => :to_a
+
     def initialize(*args)
       options         = args.extract_options!
       self.key        = args.shift || options[:key]
@@ -41,7 +43,7 @@ module Redis::Types
     def save; true; end
 
     def to_a
-      redis.lrange( 0, -1 ).map{|v| Marshal.load v }
+      redis.lrange( key, 0, -1 ).map{|v| Marshal.load v }
     end
   end
 end

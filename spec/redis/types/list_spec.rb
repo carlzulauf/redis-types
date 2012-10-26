@@ -6,6 +6,13 @@ describe Redis::Types::List do
     $redis.rpush "test", "bar"
     @a = Redis::Types::List.new "test"
   end
+
+  describe "#+" do
+    it "should return a new array containg values from both" do
+      v = @a + ["yin", "yang"]
+      v.should == %w{foo bar yin yang}
+    end
+  end
   
   describe "#<<" do
     it "should add values" do
