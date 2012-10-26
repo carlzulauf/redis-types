@@ -10,14 +10,15 @@ module Redis::Types::ClientMethods
   end
 
   def namespace
-    redis.respond_to? :namespace ? redis.namespace : nil
+    redis.respond_to?(:namespace) ? redis.namespace : nil
   end
   
   def namespace=(ns)
     if ns.present?
-      redis = Redis::Namespace.new(ns, redis)
+      redis = self.redis.kind_of?(Redis::Namespace) ? self.redis.redis : self.redis
+      self.redis = Redis::Namespace.new(ns, redis: redis)
     else
-      redis = redis.redis if redis.kind_of?(Redis::Namespace)
+      self.redis = self.redis.redis if self.redis.kind_of?(Redis::Namespace)
     end
   end
 
