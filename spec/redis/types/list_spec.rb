@@ -27,6 +27,46 @@ describe Redis::Types::List do
     end
   end
 
+  describe "#<=>" do
+    it "should return based on alphabetical order of key for other redis lists" do
+      first = Redis::Types::List.new("another_list")
+      last  = Redis::Types::List.new("zany_key")
+      same  = Redis::Types::List.new("test")
+      (@a <=> first).should ==  1
+      (@a <=> last ).should == -1
+      (@a <=> same ).should ==  0
+    end
+    it "should return based on array contents when sent an array" do
+      (@a <=> %w{foo aar}).should ==  1
+      (@a <=> %w{foo zar}).should == -1
+      (@a <=> %w{foo bar}).should ==  0
+    end
+  end
+
+  describe "#[]" do
+    it "should return the specified index" do
+      @a[1].should == "bar"
+    end
+    it "should return an array for the specified index and length" do
+      @a << "yin" << "yang"
+      @a[ 1, 2 ].should == %w{bar yin}
+    end
+    it "should return an empty array when length is zero" do
+      @a[1,0].should === []
+    end
+    it "should return nil when a negative length is given" do
+      @a[1,-1].should be_nil
+    end
+    it "should return an array that stops at the last element" do
+      @a[1,16].should == %W{bar}
+    end
+    it "should return an array for the specified range" do
+      @a[0..1].should == %w{foo bar}
+      @a[1..2].should == %w{bar}
+      @a[0..-1].should == %w{foo bar}
+    end
+  end
+
   describe "#each" do
     it "should iterate through the values in order" do
       i = 0
