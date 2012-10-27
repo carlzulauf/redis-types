@@ -87,6 +87,26 @@ describe Redis::Types::List do
     end
   end
 
+  describe "#at" do
+    it "should provide the value at the specified index" do
+      @a.at(0).should == "foo"
+      @a.at(1).should == "bar"
+    end
+    it "should provide a value from the end when a negative index is specified" do
+      @a.at(-1).should == "bar"
+      @a.at(-2).should == "foo"
+    end
+  end
+
+  describe "#clear" do
+    it "should remove all items from list and return the empty list" do
+      a = @a.clear
+      @a.length.should == 0
+      a.length.should == 0
+      @a.should === a
+    end
+  end
+
   describe "#each" do
     it "should iterate through the values in order" do
       i = 0

@@ -42,6 +42,15 @@ module Redis::Types
     end
     alias_method :slice, :[]
 
+    def at(index)
+      self[index]
+    end
+
+    def clear
+      destroy
+      self
+    end
+
     def range(start, stop = nil)
       if start.kind_of?(Range)
         range(start.first, start.last)
@@ -69,6 +78,10 @@ module Redis::Types
 
     def pop
       Marshal.load( redis.rpop key )
+    end
+
+    def destroy
+      redis.del( key )
     end
 
     # Here for compatability with Redis::Types::Array only. Does nothing.
