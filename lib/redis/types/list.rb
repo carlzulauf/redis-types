@@ -73,6 +73,20 @@ module Redis::Types
       redis.lrem(key, 0, value) == 0 ? nil : value
     end
 
+    def fetch(index, default = nil)
+      if length > index
+        self[index]
+      else
+        if block_given?
+          yield
+        elsif default
+          default
+        else
+          raise IndexError
+        end
+      end
+    end
+
     def range(start, stop = nil)
       if start.kind_of?(Range)
         range(start.first, start.last)

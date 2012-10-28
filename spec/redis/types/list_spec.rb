@@ -187,6 +187,21 @@ describe Redis::Types::List do
     end
   end
 
+  describe "#fetch" do
+    it "should return the value at the specified index" do
+      @a.fetch(1).should == "bar"
+    end
+    it "should raise IndexError when specified index is outside the list" do
+      expect{ @a.fetch(7) }.to raise_error(IndexError)
+    end
+    it "should return default for bad indexes when default is supplied" do
+      @a.fetch(7, "default").should == "default"
+    end
+    it "should return the result of the block for bad index when block supplied" do
+      @a.fetch(7){ "default" }.should == "default"
+    end
+  end
+
   describe "#pop" do
     it "should remove and return the last element" do
       @a.pop.should == "bar"
