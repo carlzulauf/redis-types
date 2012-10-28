@@ -4,7 +4,10 @@ module Redis::Types
     include Enumerable
 
     delegate :&, :*, :+, :-, :abbrev, :assoc, :combination, :compact, :flatten,
-             :hash, :index, :join, :pack, :permutation, :product, :to => :to_a
+             :hash, :index, :join, :pack, :permutation, :product, :rassoc,
+             :repeated_combination, :repeated_permutation, :reverse, :rindex,
+             :rotate,
+             :to => :to_a
 
     def initialize(*args)
       options         = args.extract_options!
@@ -126,6 +129,21 @@ module Redis::Types
 
     def push(*values)
       redis.rpush key, values.map{|v| Marshal.dump v }
+    end
+
+    def sample(n = nil)
+      l = length
+      if n
+        n = l if n > l
+        indexes = []
+        while indexes.length < n
+          r = rand(l)
+          indexes << r unless indexes.member?(r)
+        end
+        redis.pipelined{|r| indexes.each{|i| r.lindex(key, i) } }.map{|v| Marshal.load v }
+      else
+        self[ rand(l) ]
+      end
     end
 
     def destroy

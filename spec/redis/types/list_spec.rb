@@ -228,6 +228,16 @@ describe Redis::Types::List do
     end
   end
 
+  describe "#sample" do
+    it "should provide a random value" do
+      @a.sample.should =~ /^(foo|bar)$/
+    end
+    it "should return an array of the size provided when size argument supplied" do
+      v = @a.sample(2)
+      (v == %w{foo bar} or v == %w{bar foo}).should be_true
+    end
+  end
+
   describe "#save" do
     it "should persist the array to Redis" do
       @a << "pop"
