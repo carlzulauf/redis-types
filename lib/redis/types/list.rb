@@ -88,6 +88,10 @@ module Redis::Types
       end
     end
 
+    def empty?
+      length == 0
+    end
+
     def length
       redis.llen key
     end

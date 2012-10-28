@@ -169,6 +169,15 @@ describe Redis::Types::List do
     end
   end
 
+  describe "#emtpy?" do
+    it "should return false for a list with items" do
+      @a.empty?.should be_false
+    end
+    it "should return true for a list with no items" do
+      Redis::Types::List.new("empty").empty?.should be_true
+    end
+  end
+
   describe "#pop" do
     it "should remove and return the last element" do
       @a.pop.should == "bar"
