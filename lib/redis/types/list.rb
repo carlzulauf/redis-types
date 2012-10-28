@@ -55,6 +55,10 @@ module Redis::Types
       redis.rpush key, other_array.map{|v| Marshal.dump v }
     end
 
+    def delete(value)
+      redis.lrem(key, 0, value) == 0 ? nil : value
+    end
+
     def range(start, stop = nil)
       if start.kind_of?(Range)
         range(start.first, start.last)

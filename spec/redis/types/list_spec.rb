@@ -128,6 +128,29 @@ describe Redis::Types::List do
     end
   end
 
+  describe "#count" do
+    it "should return the number of items" do
+      @a.count.should == 2
+    end
+    it "should return the number of items matching supplied block" do
+      @a.count{|v| v == "bar"}.should == 1
+    end
+  end
+
+  describe "#delete" do
+    it "should remove all occurrances of the supplied value" do
+      @a << "yin" << "foo" << "foo" << "yang" << "foo"
+      @a.delete("foo")
+      @a.to_a.should == %w{bar yin yang}
+    end
+    it "should return the deleted value" do
+      @a.delete("foo").should == "foo"
+    end
+    it "should return nil if the supplied value is not found" do
+      @a.delete("bad").should be_nil
+    end
+  end
+
   describe "#each" do
     it "should iterate through the values in order" do
       i = 0
