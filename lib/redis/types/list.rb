@@ -55,6 +55,14 @@ module Redis::Types
       redis.rpush key, other_array.map{|v| Marshal.dump v }
     end
 
+    def count
+      if block_given?
+        super
+      else
+        length
+      end
+    end
+
     def delete(value)
       redis.lrem(key, 0, value) == 0 ? nil : value
     end
