@@ -27,6 +27,12 @@ module Redis::Types
       end
     end
 
+    def ==(other)
+      return false unless other.respond_to? :namespace and other.respond_to? :key
+      other.namespace == namespace and other.key == key
+    end
+    alias_method :eql?, :==
+
     def [](index, length = nil)
       if length
         return nil if length < 0

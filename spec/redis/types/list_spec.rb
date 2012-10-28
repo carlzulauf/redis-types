@@ -43,6 +43,15 @@ describe Redis::Types::List do
     end
   end
 
+  describe "#==" do
+    it "should return true for another object pointing to the same redis key" do
+      (@a == Redis::Types::List.new("test")).should be_true
+    end
+    it "should return false for other objects" do
+      (@a == %w{foo bar}).should be_false
+    end
+  end
+
   describe "#[]" do
     it "should return the specified index" do
       @a[1].should == "bar"
