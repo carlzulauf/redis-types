@@ -81,14 +81,17 @@ describe Redis::Types::List do
 
   describe "#assoc" do
     it "should return the first member array whose first value matches supplied value" do
-      t = Redis::Types::List.new
-      t << %w{foo bar} << %w{yin yang}
-      t.assoc("yin").should == %w{yin yang}
+      @t = Redis::Types::List.new
+      @t << %w{foo bar} << %w{yin yang}
+      @t.assoc("yin").should == %w{yin yang}
     end
     it "should return nil when the supplied value is not found" do
-      t = Redis::Types::List.new
-      t << %w{foo bar} << %w{yin yang}
-      t.assoc("yang").should be_nil
+      @t = Redis::Types::List.new
+      @t << %w{foo bar} << %w{yin yang}
+      @t.assoc("yang").should be_nil
+    end
+    after :each do
+      @t.destroy
     end
   end
 
@@ -109,6 +112,19 @@ describe Redis::Types::List do
       @a.length.should == 0
       a.length.should == 0
       @a.should === a
+    end
+  end
+
+  describe "#collect" do
+    it "should work like Array#collect" do
+      @a.map{|v| v + v }.should == %w{foofoo barbar}
+    end
+  end
+
+  describe "#concat" do
+    it "should add the supplied array to self" do
+      @a.concat %w{yin yang}
+      @a.to_a.should == %w{foo bar yin yang}
     end
   end
 

@@ -3,7 +3,7 @@ module Redis::Types
     include ClientMethods
     include Enumerable
 
-    delegate :&, :*, :+, :-, :abbrev, :assoc, :to => :to_a
+    delegate :&, :*, :+, :-, :abbrev, :assoc, :combination, :compact, :to => :to_a
 
     def initialize(*args)
       options         = args.extract_options!
@@ -49,6 +49,10 @@ module Redis::Types
     def clear
       destroy
       self
+    end
+
+    def concat(other_array)
+      redis.rpush key, other_array.map{|v| Marshal.dump v }
     end
 
     def range(start, stop = nil)
