@@ -221,6 +221,13 @@ describe Redis::Types::List do
     end
   end
 
+  describe "#push" do
+    it "should append the supplied values to the end of the array" do
+      @a.push "yin", "yang"
+      @a.to_a.should == %w{foo bar yin yang}
+    end
+  end
+
   describe "#save" do
     it "should persist the array to Redis" do
       @a << "pop"

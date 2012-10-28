@@ -4,7 +4,7 @@ module Redis::Types
     include Enumerable
 
     delegate :&, :*, :+, :-, :abbrev, :assoc, :combination, :compact, :flatten,
-             :hash, :index, :join, :to => :to_a
+             :hash, :index, :join, :pack, :permutation, :product, :to => :to_a
 
     def initialize(*args)
       options         = args.extract_options!
@@ -17,7 +17,6 @@ module Redis::Types
       redis.rpush key, Marshal.dump( value )
       self
     end
-    alias_method :push, :<<
 
     def <=>(other)
       case other
@@ -59,7 +58,7 @@ module Redis::Types
     end
 
     def concat(other_array)
-      redis.rpush key, other_array.map{|v| Marshal.dump v }
+      push *other_array
     end
 
     def count
@@ -123,6 +122,10 @@ module Redis::Types
 
     def pop
       Marshal.load( redis.rpop key )
+    end
+
+    def push(*values)
+      redis.rpush key, values.map{|v| Marshal.dump v }
     end
 
     def destroy
