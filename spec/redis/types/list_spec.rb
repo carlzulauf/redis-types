@@ -202,6 +202,12 @@ describe Redis::Types::List do
     end
   end
 
+  describe "#last" do
+    it "should return the last element" do
+      @a.last.should == "bar"
+    end
+  end
+
   describe "#pop" do
     it "should remove and return the last element" do
       @a.pop.should == "bar"

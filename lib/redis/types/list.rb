@@ -3,7 +3,8 @@ module Redis::Types
     include ClientMethods
     include Enumerable
 
-    delegate :&, :*, :+, :-, :abbrev, :assoc, :combination, :compact, :to => :to_a
+    delegate :&, :*, :+, :-, :abbrev, :assoc, :combination, :compact, :flatten,
+             :hash, :index, :join, :to => :to_a
 
     def initialize(*args)
       options         = args.extract_options!
@@ -85,6 +86,10 @@ module Redis::Types
           raise IndexError
         end
       end
+    end
+
+    def last
+      self[-1]
     end
 
     def range(start, stop = nil)
