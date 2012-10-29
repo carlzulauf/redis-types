@@ -243,6 +243,11 @@ describe Redis::Types::List do
       @a.shift.should == "foo"
       @a.to_a.should == ["bar"]
     end
+    it "should remove specified number of elements and return them" do
+      @a.push "yin", "yang"
+      @a.shift(3).should == %w{foo bar yin}
+      @a.to_a.should == ["yang"]
+    end
   end
 
   describe "#save" do
