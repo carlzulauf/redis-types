@@ -6,7 +6,7 @@ module Redis::Types
     delegate :&, :*, :+, :-, :abbrev, :assoc, :combination, :compact, :flatten,
              :hash, :index, :join, :pack, :permutation, :product, :rassoc,
              :repeated_combination, :repeated_permutation, :reverse, :rindex,
-             :rotate, :shelljoin,
+             :rotate, :shelljoin, :shuffle, :to_csv, :transpose, :uniq,
              :to => :to_a
 
     def initialize(*args)
@@ -122,13 +122,14 @@ module Redis::Types
     def length
       redis.llen key
     end
+    alias_method :size, :length
 
     def pop
       Marshal.load( redis.rpop key )
     end
 
     def push(*values)
-      redis.rpush key, values.map{|v| Marshal.dump v }
+      redis.rpush key, marshal( values )
     end
 
     def sample(n = nil)
@@ -140,7 +141,7 @@ module Redis::Types
           r = rand(l)
           indexes << r unless indexes.member?(r)
         end
-        redis.pipelined{|r| indexes.each{|i| r.lindex(key, i) } }.map{|v| Marshal.load v }
+        unmarshal redis.pipelined{|r| indexes.each{|i| r.lindex(key, i) } }
       else
         self[ rand(l) ]
       end
@@ -152,6 +153,10 @@ module Redis::Types
       else
         Marshal.load(redis.lpop key)
       end
+    end
+
+    def unshift(*values)
+      redis.lpush key, marshal( values.reverse )
     end
 
     def destroy

@@ -250,6 +250,13 @@ describe Redis::Types::List do
     end
   end
 
+  describe "#unshift" do
+    it "should add the supplied arguments to the top of the list" do
+      @a.unshift "yin", "yang"
+      @a.to_a.should == %w{yin yang foo bar}
+    end
+  end
+
   describe "#save" do
     it "should persist the array to Redis" do
       @a << "pop"
