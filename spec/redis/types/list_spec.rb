@@ -238,6 +238,13 @@ describe Redis::Types::List do
     end
   end
 
+  describe "#shift" do
+    it "should remove the first element and return it" do
+      @a.shift.should == "foo"
+      @a.to_a.should == ["bar"]
+    end
+  end
+
   describe "#save" do
     it "should persist the array to Redis" do
       @a << "pop"

@@ -6,7 +6,7 @@ module Redis::Types
     delegate :&, :*, :+, :-, :abbrev, :assoc, :combination, :compact, :flatten,
              :hash, :index, :join, :pack, :permutation, :product, :rassoc,
              :repeated_combination, :repeated_permutation, :reverse, :rindex,
-             :rotate,
+             :rotate, :shelljoin,
              :to => :to_a
 
     def initialize(*args)
@@ -143,6 +143,14 @@ module Redis::Types
         redis.pipelined{|r| indexes.each{|i| r.lindex(key, i) } }.map{|v| Marshal.load v }
       else
         self[ rand(l) ]
+      end
+    end
+
+    def shift(n = nil)
+      if n
+        unmarshal redis.pipelined{|r| n.times{ r.lpop key } }
+      else
+        Marshal.load(redis.lpop key)
       end
     end
 
