@@ -3,10 +3,10 @@ module Redis::Types
     include ClientMethods
     include Enumerable
 
-    delegate :&, :*, :+, :-, :abbrev, :assoc, :combination, :compact, :flatten,
-             :hash, :index, :join, :pack, :permutation, :product, :rassoc,
-             :repeated_combination, :repeated_permutation, :reverse, :rindex,
-             :rotate, :shelljoin, :shuffle, :to_csv, :transpose, :uniq,
+    delegate :&, :*, :+, :-, :|, :abbrev, :assoc, :combination, :compact,
+             :flatten, :hash, :index, :join, :pack, :permutation, :product,
+             :rassoc, :repeated_combination, :repeated_permutation, :reverse,
+             :rindex, :rotate, :shelljoin, :shuffle, :to_csv, :transpose, :uniq,
              :to => :to_a
 
     def initialize(*args)
