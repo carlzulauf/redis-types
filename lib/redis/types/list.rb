@@ -159,6 +159,18 @@ module Redis::Types
       redis.lpush key, marshal( values.reverse )
     end
 
+    def values_at(*args)
+      values = []
+      args.each do |i|
+        if i.kind_of?(Range)
+          values += self[i]
+        else
+          values << self[i]
+        end
+      end
+      values
+    end
+
     def destroy
       redis.del( key )
     end

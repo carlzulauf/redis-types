@@ -257,6 +257,13 @@ describe Redis::Types::List do
     end
   end
 
+  describe "#values_at" do
+    it "should return values based on index or range" do
+      @a.push "yin", "yang"
+      @a.values_at(0, 2..3).should == %w{foo yin yang}
+    end
+  end
+
   describe "#save" do
     it "should persist the array to Redis" do
       @a << "pop"
