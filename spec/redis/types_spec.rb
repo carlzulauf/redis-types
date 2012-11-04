@@ -59,6 +59,10 @@ describe "Redis::Types" do
       Redis::Types.load(:list, :type => :array).should be_a(Redis::Types::Array)
     end
 
+    it "should load a List when explicitly told to" do
+      Redis::Types.load(:array, :type => :list).should be_a(Redis::Types::List)
+    end
+
     after :all do
       $redis.del :small_hash, :big_hash, :string, :array, :list
     end
