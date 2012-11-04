@@ -21,6 +21,8 @@ require 'redis/types/array'
 
 require 'redis/types/list'
 
+require 'redis/types/set'
+
 class Redis
   module Types
     class << self
@@ -34,6 +36,8 @@ class Redis
           Marshal.load redis.get( key )
         when "list"
           load_list( key, type, options )
+        when "set"
+          Set.new(key, options)
         end
       end
       

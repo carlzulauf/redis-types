@@ -21,6 +21,7 @@ describe "Redis::Types" do
       $redis.hmset :small_hash, *[:foo, "bar", :yin, "yang"]
       $redis.set :string, "a typical string"
       $redis.lpush :array, "foo"
+      $redis.sadd :set, "foo"
 
       begin # loop ensures big hash is big enough
         $redis.hmset :big_hash, *(0..1_000).map {|i| ["key#{i}", "value#{i}"] }
@@ -61,6 +62,10 @@ describe "Redis::Types" do
 
     it "should load a List when explicitly told to" do
       Redis::Types.load(:array, :type => :list).should be_a(Redis::Types::List)
+    end
+
+    it "should load a Set for Redis sets" do
+      Redis::Types.load(:set).should be_a(Redis::Types::Set)
     end
 
     after :all do
