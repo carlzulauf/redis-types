@@ -33,14 +33,14 @@ class Redis
         when "string"
           Marshal.load redis.get( key )
         when "list"
-          Array.new( key, options )
+          load_list( key, type, options )
         end
       end
       
       alias_method :open, :load
       alias_method :find, :load
       
-      def load_hash(key, type = nil, options = {})
+      def load_hash(key, type = "", options = {})
         if type =~ /big_hash/
           BigHash.new(key, options)
         elsif type =~ /hash_map/
@@ -50,6 +50,20 @@ class Redis
             Hash.new(key, options)
           else
             BigHash.new(key, options)
+          end
+        end
+      end
+
+      def load_list(key, type = "", options = {})
+        if type =~ /list/
+          List.new(key, options)
+        elsif type =~ /array/
+          Array.new(key, options)
+        else
+          if redis.object(:encoding, key) == "ziplist"
+            Array.new(key, options)
+          else
+            List.new(key, options)
           end
         end
       end
