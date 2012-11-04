@@ -24,30 +24,40 @@ require 'redis/types/list'
 class Redis
   module Types
     class << self
+      
       def load(key, options = {})
-        redis = options[:redis] || Redis.current
-        type  = options.delete(:type).to_s
+        type  = options[:type].to_s
         case redis.type( key )
         when "hash"
-          if type =~ /big_hash/
-            BigHash.new(key, options)
-          elsif type =~ /hash_map/
-            Hash.new(key, options)
-          else
-            if redis.object(:encoding, key) == "zipmap"
-              Hash.new(key, options)
-            else
-              BigHash.new(key, options)
-            end
-          end
+          load_hash( key, type, options )
         when "string"
           Marshal.load redis.get( key )
         when "list"
           Array.new( key, options )
         end
       end
+      
       alias_method :open, :load
       alias_method :find, :load
+      
+      def load_hash(key, type = nil, options = {})
+        if type =~ /big_hash/
+          BigHash.new(key, options)
+        elsif type =~ /hash_map/
+          Hash.new(key, options)
+        else
+          if redis.object(:encoding, key) == "zipmap"
+            Hash.new(key, options)
+          else
+            BigHash.new(key, options)
+          end
+        end
+      end
+
+      def redis(options = {})
+        options[:redis] || Redis.current
+      end
+
     end
   end
 end
