@@ -43,7 +43,7 @@ class Redis
       def load_hash(key, type = "", options = {})
         if type =~ /big_hash/
           BigHash.new(key, options)
-        elsif type =~ /hash_map/
+        elsif type =~ /hash/
           Hash.new(key, options)
         else
           if redis.object(:encoding, key) == "zipmap"

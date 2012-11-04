@@ -40,7 +40,7 @@ describe "Redis::Types" do
     end
 
     it "should load a Hash when explicitly told to" do
-      Redis::Types.load(:big_hash, :type => :hash_map).should be_a(Redis::Types::Hash)
+      Redis::Types.load(:big_hash, :type => :hash).should be_a(Redis::Types::Hash)
     end
 
     it "should load a String for Redis strings" do
@@ -51,8 +51,12 @@ describe "Redis::Types" do
       Redis::Types.load(:array).should be_a(Redis::Types::Array)
     end
 
-    it "should loa a List for big Redis lists" do
+    it "should load a List for big Redis lists" do
       Redis::Types.load(:list).should be_a(Redis::Types::List)
+    end
+
+    it "should load an Array when explicitly told to" do
+      Redis::Types.load(:list, :type => :array).should be_a(Redis::Types::Array)
     end
 
     after :all do
