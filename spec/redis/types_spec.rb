@@ -69,7 +69,7 @@ describe "Redis::Types" do
     end
 
     after :all do
-      $redis.del :small_hash, :big_hash, :string, :array, :list
+      $redis.del :small_hash, :big_hash, :string, :array, :list, :set
     end
   end
 end
