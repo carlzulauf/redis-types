@@ -35,6 +35,14 @@ describe Redis::Types::Array do
     end
   end
 
+  describe "#destroy" do
+    it "should remove the array from Redis" do
+      @a.destroy
+      @a.empty?.should be_true
+      $redis.exists(@a.key).should be_false
+    end
+  end
+
   after :each do
     $redis.del "test"
   end

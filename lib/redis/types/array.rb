@@ -21,8 +21,15 @@ module Redis::Types
     end
 
     def save
-      redis.del   key
-      redis.rpush key, current.map{|v| Marshal.dump v }
+      redis.pipelined do |r|
+        r.del   key
+        r.rpush key, current.map{|v| Marshal.dump v }
+      end
+    end
+
+    def destroy
+      clear
+      redis.del key
     end
   end
 end
