@@ -21,11 +21,14 @@ module Redis::Types
     end
 
     def save
-      destroy
-      redis.sadd key, current.to_a
+      redis.pipelined do |r|
+        r.del  key
+        r.sadd key, current.to_a
+      end
     end
 
     def destroy
+      clear
       redis.del key
     end
   end
