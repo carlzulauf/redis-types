@@ -23,7 +23,7 @@ module Redis::Types
     def save
       redis.pipelined do |r|
         r.del  key
-        r.sadd key, current.to_a
+        r.sadd key, current.to_a.map{|v| Marshal.dump v }
       end
     end
 
