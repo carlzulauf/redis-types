@@ -21,4 +21,18 @@ describe "Redis::Types::ClientMethods" do
       t.redis.client.db.should == 5
     end
   end
+  describe ".redis=" do
+    before :all do
+      @original_connection = Redis::Types::Hash.redis
+    end
+    it "should allow a redis client to be provided for all instances" do
+      redis = Redis.new(:db => 5)
+      Redis::Types::Hash.redis = redis
+      Redis::Types::Hash.redis.client.db.should == 5
+      Redis::Types::Hash.new.redis.client.db.should == 5
+    end
+    after :all do
+      Redis::Types::Hash.redis = @original_connection
+    end
+  end
 end

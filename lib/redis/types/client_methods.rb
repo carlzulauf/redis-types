@@ -2,6 +2,18 @@ module Redis::Types::ClientMethods
   extend ActiveSupport::Concern
 
   included do
+    class_eval(<<-EOS, __FILE__, __LINE__ + 1)
+      @@redis = nil unless defined?(@@redis)
+
+      def self.redis
+        @@redis ||= Redis.current
+      end
+
+      def self.redis=(connection)
+        @@redis = connection
+      end
+    EOS
+
     attr_writer :key
   end
 
@@ -33,15 +45,7 @@ module Redis::Types::ClientMethods
   module ClassMethods
   
     def redis
-      if self.class_variable_defined?(:'@@redis')
-        self.class_eval{ @@redis }
-      else
-        self.class_eval{ @@redis = Redis.current }
-      end
-    end
-  
-    def redis=(connection)
-      self.class_eval{ @@redis = connection }
+      self.class_eval("@@redis ||= Redis.current")
     end
   
     def generate_key
