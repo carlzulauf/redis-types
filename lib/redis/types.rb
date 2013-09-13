@@ -26,7 +26,7 @@ require 'redis/types/set'
 class Redis
   module Types
     class << self
-      
+
       def load(key, options = {})
         type  = options[:type].to_s
         case redis.type( key )
@@ -40,17 +40,17 @@ class Redis
           Set.new(key, options)
         end
       end
-      
+
       alias_method :open, :load
       alias_method :find, :load
-      
+
       def load_hash(key, type = "", options = {})
         if type =~ /big_hash/
           BigHash.new(key, options)
         elsif type =~ /hash/
           Hash.new(key, options)
         else
-          if redis.object(:encoding, key) == "zipmap"
+          if redis.object(:encoding, key) =~ /^zip/
             Hash.new(key, options)
           else
             BigHash.new(key, options)

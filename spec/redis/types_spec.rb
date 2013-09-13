@@ -18,15 +18,15 @@ describe "Redis::Types" do
 
   describe ".load" do
     before :all do
-      $redis.hmset :small_hash, *[:foo, "bar", :yin, "yang"]
+      $redis.hmset :small_hash, :foo, "bar", :yin, "yang"
       $redis.set :string, "a typical string"
       $redis.lpush :array, "foo"
       $redis.sadd :set, "foo"
 
       begin # loop ensures big hash is big enough
         $redis.hmset :big_hash, *(0..1_000).map {|i| ["key#{i}", "value#{i}"] }
-      end while $redis.object(:encoding, :big_hash) == "zipmap"
-      
+      end while $redis.object(:encoding, :big_hash) =~ /^zip/
+
       begin # loop ensures list is big enough
         $redis.rpush :list, (0..1_000).map{|i| "value#{i}" }
       end while $redis.object(:encoding, :list) == "ziplist"
