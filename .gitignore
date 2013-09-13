@@ -3,6 +3,7 @@
 .bundle
 .config
 .rvmrc
+.ruby-*
 coverage
 InstalledFiles
 lib/bundler/man
