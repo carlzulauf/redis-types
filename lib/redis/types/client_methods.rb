@@ -4,7 +4,7 @@ module Redis::Types::ClientMethods
   included do |klass|
     class_eval(<<-EOS, __FILE__, __LINE__ + 1)
       def self.base_type
-        const_get "#{klass.to_s}"
+        "#{klass.to_s}".constantize
       end
     EOS
 
