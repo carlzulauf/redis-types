@@ -8,7 +8,6 @@ require 'redis/namespace'
 
 require 'redis/types/marshal'
 require 'redis/types/client_methods'
-require 'redis/types/customizable'
 
 require 'redis/types/hash'
 require 'redis/types/hash/track_changes'

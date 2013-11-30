@@ -8,7 +8,7 @@ end
 
 describe "Redis::Types::Customizable" do
   before :each do
-    @custom = Custom.new("test")
+    @custom = Custom.new
     @custom.foo = "bar"
     @custom.yin = "yang"
     @custom.save
@@ -23,9 +23,9 @@ describe "Redis::Types::Customizable" do
       Redis::Types::Hash.namespace.should be_nil
     end
 
-    # it "should store the hash under the namespace" do
-    #   binding.pry
-    # end
+    it "instances should use the specified namespace" do
+      @custom.namespace.should == :test
+    end
   end
 
   describe ".strategy" do

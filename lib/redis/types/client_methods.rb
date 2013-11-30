@@ -3,16 +3,6 @@ module Redis::Types::ClientMethods
 
   included do |klass|
     class_eval(<<-EOS, __FILE__, __LINE__ + 1)
-      @@redis = nil unless defined?(@@redis)
-
-      def self.redis
-        @@redis ||= Redis.current
-      end
-
-      def self.redis=(connection)
-        @@redis = connection
-      end
-
       def self.base_type
         const_get "#{klass.to_s}"
       end
@@ -49,16 +39,20 @@ module Redis::Types::ClientMethods
   module ClassMethods
 
     def namespace(ns = nil)
-      @_namespace = ns if ns.present?
+      if ns.present?
+        @_namespace = ns
+        conn = redis.respond_to?(:redis) ? redis.redis : redis
+        @_redis = Redis::Namespace.new(ns, redis: conn)
+      end
       @_namespace
     end
 
     def redis
-      self.class_eval("@@redis ||= Redis.current")
+      @_redis || Redis.current
     end
 
-    def redis=(val)
-      self.class_eval
+    def redis=(conn)
+      @_redis = conn
     end
 
     def generate_key
