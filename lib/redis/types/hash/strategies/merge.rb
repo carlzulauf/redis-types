@@ -2,6 +2,12 @@
 # Gives priority to the changes made concurrently
 # when there is a conflict.
 module Redis::Types::Hash::Strategies::Merge
+  extend ActiveSupport::Concern
+
+  included do
+    include Redis::Types::Hash::TrackChanges
+  end
+
   def self.extend_object(obj)
     obj.extend Redis::Types::Hash::TrackChanges
     super

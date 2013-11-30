@@ -1,7 +1,7 @@
 module Redis::Types::ClientMethods
   extend ActiveSupport::Concern
 
-  included do
+  included do |klass|
     class_eval(<<-EOS, __FILE__, __LINE__ + 1)
       @@redis = nil unless defined?(@@redis)
 
@@ -11,6 +11,10 @@ module Redis::Types::ClientMethods
 
       def self.redis=(connection)
         @@redis = connection
+      end
+
+      def self.base_type
+        const_get "#{klass.to_s}"
       end
     EOS
 
@@ -24,7 +28,7 @@ module Redis::Types::ClientMethods
   def namespace
     redis.respond_to?(:namespace) ? redis.namespace : nil
   end
-  
+
   def namespace=(ns)
     if ns.present?
       redis = self.redis.kind_of?(Redis::Namespace) ? self.redis.redis : self.redis
@@ -37,21 +41,50 @@ module Redis::Types::ClientMethods
   def redis
     @redis ||= self.class.redis
   end
-  
+
   def redis=(connection)
     @redis = connection
   end
 
   module ClassMethods
-  
+
+    def namespace(ns = nil)
+      @_namespace = ns if ns.present?
+      @_namespace
+    end
+
     def redis
       self.class_eval("@@redis ||= Redis.current")
     end
-  
+
+    def redis=(val)
+      self.class_eval
+    end
+
     def generate_key
       t = Time.now
       t.strftime('%Y%m%d%H%M%S.') + t.usec.to_s.rjust(6,'0') + '.' + SecureRandom.hex(8)
     end
-  
+
+    def strategy(name = nil)
+      if name
+        @_strategy = name
+        include base_type.const_get(:Strategies).const_get(name.to_s.camelize)
+      end
+      @_strategy
+    end
+
+    def fixed_attrs(*attrs)
+      attrs.each do |a|
+        define_method(a) do
+          self[a]
+        end
+
+        define_method("#{a}=") do |value|
+          self[a] = value
+        end
+      end
+    end
+
   end
 end
