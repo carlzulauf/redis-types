@@ -31,6 +31,13 @@ describe Redis::Types::SortedSet do
     end
   end
 
+  describe "#delete" do
+    it "should remove the specified element from the set" do
+      @s.delete "bar"
+      @s.first(2).should == %w{foo}
+    end
+  end
+
   after :each do
     $redis.del "test"
   end

@@ -22,6 +22,10 @@ module Redis::Types
       redis.zcard key
     end
 
+    def delete(value)
+      redis.zrem key, value
+    end
+
     def destroy
       redis.del key
     end
