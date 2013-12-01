@@ -23,6 +23,8 @@ require 'redis/types/list'
 
 require 'redis/types/set'
 
+require 'redis/types/sorted_set'
+
 class Redis
   module Types
     class << self
